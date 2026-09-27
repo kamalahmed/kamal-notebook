@@ -11,6 +11,11 @@ $assert = static function ( bool $condition, string $message ): void {
 
 $assert( 'grid' === kn_sanitize_settings( array( 'archive_layout' => 'invalid' ) )['archive_layout'], 'Invalid layouts must fall back to the grid.' );
 $assert( 'index' === kn_sanitize_settings( array( 'archive_layout' => 'index' ) )['archive_layout'], 'The numbered layout must be available.' );
+$assert( 'one@example.com, two@example.com' === kn_sanitize_settings( array( 'contact_email' => "one@example.com, invalid, two@example.com\none@example.com" ) )['contact_email'], 'Contact receivers must be valid and unique.' );
+$assert( ! knt_contact_ready() || count( knt_contact_recipients() ) > 0, 'Contact form must require a configured receiver.' );
+$assert( taxonomy_exists( 'knt_series' ), 'Series taxonomy is missing.' );
+$assert( isset( get_registered_meta_keys( 'post', 'post' )['_knt_featured'] ), 'Featured article setting is missing.' );
+$assert( file_exists( get_theme_file_path( 'page-about.php' ) ) && file_exists( get_theme_file_path( 'page-contact.php' ) ), 'Editorial page templates are missing.' );
 $assert( WP_Block_Patterns_Registry::get_instance()->is_registered( 'kamal-notebook/guided-article' ), 'Guided Article starter is missing.' );
 $assert( WP_Block_Patterns_Registry::get_instance()->is_registered( 'kamal-notebook/quick-note' ), 'Quick Note starter is missing.' );
 $assert( WP_Block_Patterns_Registry::get_instance()->is_registered( 'kamal-notebook/tutorial-course' ), 'Tutorial course starter is missing.' );

@@ -1,0 +1,20 @@
+.knt-cover-studio { max-width: 1500px; color: #173a31; }
+.knt-cover-heading { max-width: 780px; padding: 43px 0 37px; }
+.knt-cover-heading > span { color: #b8452f; font: 600 11px/1.4 ui-monospace, monospace; letter-spacing: .14em; }
+.knt-cover-heading h1 { margin: 11px 0 13px; color: #173a31; font: 500 clamp(47px, 5vw, 76px)/.98 Georgia, serif; letter-spacing: -.055em; }
+.knt-cover-heading p { margin: 0; color: #52685e; font: 17px/1.55 system-ui, sans-serif; }
+.knt-cover-grid { display: grid; grid-template-columns: minmax(290px, 390px) minmax(0, 1fr); gap: clamp(30px, 5vw, 80px); align-items: start; border-top: 1px solid #173a31; padding-top: 37px; }
+.knt-cover-controls { display: grid; gap: 10px; }
+.knt-cover-controls label { margin-top: 12px; font: 700 11px/1.4 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; }
+.knt-cover-controls input, .knt-cover-controls select { width: 100%; max-width: none; min-height: 42px; border-color: #9eafa4; border-radius: 0; background: #fffdf7; color: #173a31; }
+.knt-cover-controls .description { margin: 0 0 8px; color: #52685e; font-size: 12px; line-height: 1.5; }
+.knt-cover-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.knt-cover-pair > div { display: grid; gap: 10px; }
+.knt-cover-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 19px; }
+.knt-cover-buttons .button { min-height: 42px; border-radius: 0; padding: 3px 14px; }
+.knt-cover-buttons .button-primary { background: #173a31; border-color: #173a31; }
+#knt-cover-status { min-height: 2em; margin: 7px 0; font-weight: 600; }
+.knt-cover-preview { padding: 17px; background: #e5e9dc; }
+.knt-cover-preview canvas { display: block; width: 100%; height: auto; aspect-ratio: 4/3; background: #f6f2e9; box-shadow: 0 12px 35px #173a3126; }
+.knt-cover-preview > span { display: block; margin-top: 15px; text-align: right; color: #52685e; font: 11px/1.5 ui-monospace, monospace; }
+@media (max-width: 1050px) { .knt-cover-grid { grid-template-columns: 1fr; } .knt-cover-preview { max-width: 900px; } }

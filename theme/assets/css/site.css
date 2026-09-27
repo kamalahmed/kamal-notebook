@@ -1860,23 +1860,23 @@ p {
 .article-byline .avatar-mark {
   text-transform: lowercase;
 }
-.article-content > p:first-child:first-letter {
+:is(.article-content, [data-knt-lesson-content]) > p:first-child:first-letter {
   float: left;
   margin: 5px 9px -10px -4px;
   color: var(--accent);
   font: 500 93px/0.8 var(--serif);
 }
-.article-content > h2,
-.article-content > .wp-block-group > h2,
-.article-content > .wp-block-group > .wp-block-heading {
+:is(.article-content, [data-knt-lesson-content]) > h2,
+:is(.article-content, [data-knt-lesson-content]) > .wp-block-group > h2,
+:is(.article-content, [data-knt-lesson-content]) > .wp-block-group > .wp-block-heading {
   scroll-margin-top: 70px;
   margin: 74px 0 22px;
   font: 500 clamp(42px, 4.1vw, 59px) / 1.08 var(--serif);
   letter-spacing: -0.055em;
   color: var(--ink);
 }
-.article-content > h3,
-.article-content > .wp-block-group > h3 {
+:is(.article-content, [data-knt-lesson-content]) > h3,
+:is(.article-content, [data-knt-lesson-content]) > .wp-block-group > h3 {
   margin: 44px 0 16px;
   font: 500 32px/1.2 var(--serif);
 }
@@ -2430,12 +2430,12 @@ p {
     margin-left: auto;
   }
 }
-.article-content > .kn-takeaways > h3 {
+:is(.article-content, [data-knt-lesson-content]) > .kn-takeaways > h3 {
   margin: 0 0 15px;
   font: 500 31px/1.12 var(--serif);
   letter-spacing: -0.04em;
 }
-.article-content > .kn-key-concepts > h3 {
+:is(.article-content, [data-knt-lesson-content]) > .kn-key-concepts > h3 {
   margin: 0 0 13px;
   color: var(--accent-dark);
   font: 500 10px/1.45 var(--mono);
@@ -2446,7 +2446,7 @@ p {
   .article-shell.has-outline .article-content {
     position: relative;
   }
-  .article-shell.has-outline .article-content > .kn-key-concepts {
+  .article-shell.has-outline :is(.article-content, [data-knt-lesson-content]) > .kn-key-concepts {
     position: absolute;
     top: 0;
     left: calc(100% + 58px);
@@ -2458,17 +2458,17 @@ p {
 .article-shell {
   overflow-x: clip;
 }
-.article-content > .kn-takeaways > h2 {
+:is(.article-content, [data-knt-lesson-content]) > .kn-takeaways > h2 {
   margin: 0 0 15px;
   font: 500 31px/1.12 var(--serif);
   letter-spacing: -0.04em;
 }
-.article-content > .kn-takeaways > h2::before {
+:is(.article-content, [data-knt-lesson-content]) > .kn-takeaways > h2::before {
   content: "✳";
   margin-right: 13px;
   color: var(--accent);
 }
-.article-content > .kn-key-concepts > h2 {
+:is(.article-content, [data-knt-lesson-content]) > .kn-key-concepts > h2 {
   margin: 0 0 13px;
   color: var(--accent-dark);
   font: 500 10px/1.45 var(--mono);

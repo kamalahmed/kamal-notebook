@@ -1,0 +1,303 @@
+/* About and Contact: a quiet continuation of the notebook's editorial system. */
+.kn-editorial-page {
+  overflow: clip;
+}
+
+.kn-page-hero {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.32fr) minmax(0, 0.68fr);
+  gap: clamp(32px, 5vw, 90px);
+  padding-top: clamp(76px, 9vw, 152px);
+  padding-bottom: clamp(82px, 9vw, 145px);
+}
+
+.kn-page-hero-label {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--ink);
+}
+
+.kn-page-hero-label .eyebrow {
+  color: var(--accent-dark);
+}
+
+.kn-page-hero-mark {
+  color: var(--accent);
+  font: 500 30px/0.8 var(--serif);
+}
+
+.kn-page-hero h1 {
+  max-width: 950px;
+  margin: 0 0 clamp(27px, 4vw, 62px);
+  font: 500 clamp(72px, 10vw, 158px) / 0.88 var(--serif);
+  letter-spacing: -0.075em;
+  overflow-wrap: anywhere;
+}
+
+.kn-page-deck {
+  max-width: 780px;
+  margin: 0;
+  color: var(--ink-muted);
+  font: 400 clamp(24px, 2.7vw, 40px) / 1.28 var(--serif);
+  letter-spacing: -0.035em;
+}
+
+.kn-page-rule {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  height: 12px;
+  background: var(--ink);
+}
+
+.kn-page-rule span:nth-child(2) {
+  background: var(--accent);
+}
+
+.kn-page-rule span:nth-child(3) {
+  background: var(--yellow);
+}
+
+.kn-page-body {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.32fr) minmax(0, 0.68fr);
+  gap: clamp(32px, 5vw, 90px);
+  padding-top: clamp(70px, 8vw, 125px);
+  padding-bottom: clamp(110px, 13vw, 210px);
+}
+
+.kn-page-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 35px;
+}
+
+.kn-page-aside .eyebrow {
+  padding-top: 13px;
+  border-top: 1px solid var(--ink);
+}
+
+.kn-aside-glyph {
+  color: var(--accent);
+  font: 500 clamp(120px, 16vw, 240px) / 0.8 var(--serif);
+  letter-spacing: -0.13em;
+  user-select: none;
+}
+
+.kn-page-content {
+  min-width: 0;
+  max-width: 790px;
+}
+
+.kn-about-page .kn-page-content.article-content {
+  font-size: clamp(17px, 1.55vw, 21px);
+}
+
+.kn-page-content > p:first-child,
+.kn-page-content .article-content > p:first-child {
+  font: 400 clamp(26px, 2.7vw, 37px) / 1.4 var(--serif);
+  letter-spacing: -0.025em;
+}
+
+.kn-page-next {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 30px;
+  margin-top: clamp(65px, 8vw, 120px);
+  padding: 21px 0 24px;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  font: 500 clamp(29px, 3.4vw, 48px) / 1.1 var(--serif);
+  letter-spacing: -0.045em;
+  transition:
+    color 0.2s ease,
+    padding-left 0.2s ease;
+}
+
+.kn-page-next:hover {
+  padding-left: 8px;
+  color: var(--accent-dark);
+}
+
+.kn-page-next span:last-child {
+  color: var(--accent);
+}
+
+.kn-contact-intro {
+  margin-bottom: 45px;
+}
+
+.kn-contact-notice,
+.kn-contact-unavailable {
+  margin: 0 0 35px;
+  padding: 18px 22px;
+  border-left: 4px solid var(--ink);
+  background: var(--paper-deep);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.kn-contact-notice.is-success {
+  border-color: var(--ink);
+}
+
+.kn-contact-notice.is-error {
+  border-color: var(--accent-dark);
+}
+
+.kn-contact-form {
+  position: relative;
+}
+
+.kn-contact-trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.kn-contact-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 2.5vw, 35px);
+}
+
+.kn-contact-field {
+  margin: 0 0 32px;
+}
+
+.kn-contact-field label {
+  display: block;
+  margin-bottom: 13px;
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.kn-contact-field label span {
+  color: var(--accent-dark);
+}
+
+.kn-contact-field input,
+.kn-contact-field textarea {
+  display: block;
+  width: 100%;
+  padding: 15px 16px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: #fffdf7;
+  color: var(--ink);
+  font: 16px/1.5 var(--sans);
+  transition: border-color 0.2s ease;
+}
+
+.kn-contact-field input:hover,
+.kn-contact-field textarea:hover,
+.kn-contact-field input:focus,
+.kn-contact-field textarea:focus {
+  border-color: var(--ink);
+}
+
+.kn-contact-field textarea {
+  min-height: 220px;
+  resize: vertical;
+}
+
+.kn-contact-submit {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding-top: 2px;
+}
+
+.kn-contact-submit button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  min-width: 210px;
+  padding: 17px 20px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.kn-contact-submit button:hover {
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+.kn-contact-submit button span {
+  font: 26px/0.7 var(--serif);
+}
+
+.kn-contact-submit p {
+  max-width: 260px;
+  margin: 0;
+  color: var(--ink-muted);
+  font: 11px/1.6 var(--mono);
+}
+
+@media (max-width: 800px) {
+  .kn-page-hero,
+  .kn-page-body {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .kn-page-hero-label {
+    max-width: 240px;
+  }
+
+  .kn-page-body {
+    padding-top: 55px;
+  }
+
+  .kn-page-aside {
+    display: block;
+  }
+
+  .kn-aside-glyph {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .kn-page-hero h1 {
+    font-size: clamp(66px, 16vw, 94px);
+  }
+
+  .kn-contact-fields {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .kn-contact-submit {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 17px;
+  }
+
+  .kn-contact-submit button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kn-page-next,
+  .kn-contact-field input,
+  .kn-contact-field textarea,
+  .kn-contact-submit button {
+    transition: none;
+  }
+}

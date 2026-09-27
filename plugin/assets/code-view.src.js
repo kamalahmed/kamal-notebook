@@ -10,9 +10,16 @@ import "prismjs/components/prism-bash";
 import "prismjs/components/prism-python";
 
 Prism.manual = true;
-document
-  .querySelectorAll(".kn-code code")
-  .forEach((code) => Prism.highlightElement(code));
+function highlightCode() {
+  document.querySelectorAll(".kn-code code").forEach((code) => {
+    if (!code.dataset.kntHighlighted) {
+      Prism.highlightElement(code);
+      code.dataset.kntHighlighted = "1";
+    }
+  });
+}
+highlightCode();
+document.addEventListener("knt:lessonchange", highlightCode);
 
 async function copyText(value) {
   if (navigator.clipboard && window.isSecureContext) {
@@ -30,8 +37,9 @@ async function copyText(value) {
   if (!copied) throw new Error("Copy unavailable");
 }
 
-document.querySelectorAll(".kn-code [data-copy-code]").forEach((button) => {
-  button.addEventListener("click", async () => {
+document.addEventListener("click", async (event) => {
+    const button = event.target.closest(".kn-code [data-copy-code]");
+    if (!button) return;
     const code = button.closest(".kn-code")?.querySelector("code")?.textContent;
     if (!code) return;
     try {
@@ -43,5 +51,4 @@ document.querySelectorAll(".kn-code [data-copy-code]").forEach((button) => {
     setTimeout(() => {
       button.textContent = "Copy code";
     }, 2000);
-  });
 });

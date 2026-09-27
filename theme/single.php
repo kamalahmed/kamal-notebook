@@ -16,25 +16,33 @@ while ( have_posts() ) :
 		$legacy_resize = '<script>(function(){function report(){parent.postMessage({knLegacyHeight:Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)},"*")}addEventListener("load",report);if(window.ResizeObserver){new ResizeObserver(report).observe(document.body)}else{setInterval(report,500)}requestAnimationFrame(report)})();</script>';
 		$legacy_doc = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body>' . $content . $legacy_mobile . $legacy_resize . '</body></html>';
 	}
-	$related = get_posts( array(
-		'numberposts' => 1,
-		'post_type'   => 'post',
-		'post_status' => 'publish',
-		'exclude'     => array( $post_id ),
-		'category__in' => wp_get_post_categories( $post_id ),
-	) );
-	if ( ! $related ) {
-		$related = get_posts( array( 'numberposts' => 1, 'post_type' => 'post', 'post_status' => 'publish', 'exclude' => array( $post_id ) ) );
+	$in_series = function_exists( 'knt_series_context' ) ? knt_series_context( $post_id ) : null;
+	$related = array();
+	if ( ! $in_series ) {
+		$next_args = array(
+			'numberposts' => 1,
+			'post_type'   => 'post',
+			'post_status' => 'publish',
+			'exclude'     => array( $post_id ),
+			'date_query' => array( array( 'before' => get_post_field( 'post_date', $post_id ), 'inclusive' => false ) ),
+		);
+		$categories = wp_get_post_categories( $post_id );
+		if ( $categories ) {
+			$related = get_posts( $next_args + array( 'category__in' => $categories ) );
+		}
+		if ( ! $related ) {
+			$related = get_posts( $next_args );
+		}
 	}
 	?>
-	<article id="post-<?php the_ID(); ?>" <?php post_class( $is_tutorial ? 'kn-article-tutorial' : '' ); ?>>
+	<article id="post-<?php the_ID(); ?>" data-knt-lesson-id="<?php echo esc_attr( $post_id ); ?>" <?php if ( $in_series ) : ?>data-knt-series-id="<?php echo esc_attr( $in_series['id'] ); ?>"<?php endif; ?> <?php post_class( $is_tutorial ? 'kn-article-tutorial' : '' ); ?>>
 		<header class="article-hero container">
 			<div class="article-hero-copy">
 				<a class="back-link" href="<?php echo esc_url( kn_archive_url() . '#stories' ); ?>">
 					<span aria-hidden="true">←</span> <?php esc_html_e( 'Back to the notebook', 'kamal-notebook' ); ?>
 				</a>
 				<div class="article-kicker">
-					<span><?php echo esc_html( kn_post_topic( $post_id ) ); ?> / <?php echo esc_html( $is_tutorial ? __( 'TUTORIAL', 'kamal-notebook' ) : __( 'STORY', 'kamal-notebook' ) ); ?></span>
+					<span><?php echo esc_html( kn_post_topic( $post_id ) ); ?> / <?php echo esc_html( $in_series ? __( 'LESSON', 'kamal-notebook' ) : ( $is_tutorial ? __( 'TUTORIAL', 'kamal-notebook' ) : __( 'STORY', 'kamal-notebook' ) ) ); ?></span>
 					<span class="kicker-rule"></span>
 					<span><?php echo esc_html( kn_reading_minutes( $post_id ) ); ?> <?php esc_html_e( 'MIN READ', 'kamal-notebook' ); ?></span>
 				</div>
@@ -51,11 +59,7 @@ while ( have_posts() ) :
 				</div>
 			</div>
 			<div class="article-hero-art">
-				<?php if ( has_post_thumbnail() ) : ?>
-					<?php echo get_the_post_thumbnail( $post_id, 'kn-feature', array( 'loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async' ) ); ?>
-				<?php else : ?>
-					<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/feature.svg' ) ); ?>" alt="" width="920" height="720" fetchpriority="high">
-				<?php endif; ?>
+				<?php echo kn_post_image( $post_id, 'kn-feature', true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Helper returns escaped theme markup. ?>
 				<span class="art-vertical"><?php esc_html_e( 'THE NOTEBOOK', 'kamal-notebook' ); ?></span>
 			</div>
 		</header>
@@ -91,12 +95,14 @@ while ( have_posts() ) :
 					</details>
 				<?php endif; ?>
 
+				<div data-knt-lesson-content>
 				<?php if ( $is_legacy_tutorial ) : ?>
 					<iframe class="kn-legacy-frame" title="<?php esc_attr_e( 'Interactive tutorial lessons', 'kamal-notebook' ); ?>" sandbox="allow-scripts" srcdoc="<?php echo esc_attr( $legacy_doc ); ?>"></iframe>
 				<?php else : ?>
 					<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered by WordPress block content filters. ?>
 				<?php endif; ?>
-				<div class="article-end"><span class="end-symbol" aria-hidden="true">✳</span><span><?php echo esc_html( $is_tutorial ? __( 'END OF TUTORIAL', 'kamal-notebook' ) : __( 'END OF STORY', 'kamal-notebook' ) ); ?></span></div>
+				</div>
+				<div class="article-end"><span class="end-symbol" aria-hidden="true">✳</span><span><?php echo esc_html( $in_series ? __( 'END OF LESSON', 'kamal-notebook' ) : ( $is_tutorial ? __( 'END OF TUTORIAL', 'kamal-notebook' ) : __( 'END OF STORY', 'kamal-notebook' ) ) ); ?></span></div>
 
 				<?php if ( '1' === kn_option( 'save_enabled' ) || '1' === kn_option( 'share_enabled' ) ) : ?>
 					<div class="reader-actions" data-post-id="<?php echo esc_attr( $post_id ); ?>" data-title="<?php echo esc_attr( get_the_title() ); ?>" data-url="<?php echo esc_url( get_permalink() ); ?>">

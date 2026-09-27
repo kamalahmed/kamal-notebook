@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Kamal Notebook Tools
  * Description: An editable code block and simple reader feedback for Kamal Notebook.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Requires at least: 6.6
  * Requires PHP: 8.0
  * Author: Kamal Ahmed
@@ -11,8 +11,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KNT_VERSION = '1.1.0';
+const KNT_VERSION = '1.2.0';
 require_once __DIR__ . '/includes/demo-import.php';
+require_once __DIR__ . '/includes/featured.php';
+require_once __DIR__ . '/includes/contact.php';
+require_once __DIR__ . '/includes/series.php';
+require_once __DIR__ . '/includes/cover-studio.php';
 
 function knt_register_code_block(): void {
 	wp_register_script( 'knt-codemirror-python', plugins_url( 'assets/python-mode.js', __FILE__ ), array( 'wp-codemirror' ), KNT_VERSION, true );

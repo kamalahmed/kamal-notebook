@@ -11,13 +11,7 @@ if ( is_category() ) {
 $search      = get_search_query();
 $paged       = max( 1, (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) );
 $filtered    = '' !== $topic || '' !== $search;
-$featured    = $filtered || $paged > 1 ? array() : get_posts( array(
-	'numberposts'        => 1,
-	'post_type'          => 'post',
-	'post_status'        => 'publish',
-	'ignore_sticky_posts' => false,
-) );
-$lead        = $featured ? $featured[0] : null;
+$lead        = $filtered || $paged > 1 || ! function_exists( 'knt_featured_post' ) ? null : knt_featured_post();
 $archive_url = kn_archive_url();
 $categories  = get_categories( array( 'hide_empty' => true ) );
 $stories     = new WP_Query( array(
@@ -80,7 +74,7 @@ get_header();
 			<div class="lead-meta"><span><?php esc_html_e( 'The notebook', 'kamal-notebook' ); ?></span><span>✳</span></div>
 			<div class="lead-text">
 				<h2><?php esc_html_e( 'A space for what comes next.', 'kamal-notebook' ); ?></h2>
-				<p><?php esc_html_e( 'Stories will appear here as they are published.', 'kamal-notebook' ); ?></p>
+				<p><?php esc_html_e( 'Explore the stories below.', 'kamal-notebook' ); ?></p>
 			</div>
 		</div>
 	<?php endif; ?>

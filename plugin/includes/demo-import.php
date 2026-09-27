@@ -92,10 +92,34 @@ function knt_demo_imported_id( string $key ): int {
 	return $posts ? (int) $posts[0] : 0;
 }
 
+/** Add editable utility pages only when their slugs are free. */
+function knt_demo_add_pages(): void {
+	$pages = array(
+		'about' => array( 'title' => 'About', 'content' => '<!-- wp:paragraph --><p>This is demonstration content for your About page. Tell readers who you are and what this notebook covers. Replace this text with your own story before publishing a real site.</p><!-- /wp:paragraph -->' ),
+		'contact' => array( 'title' => 'Contact', 'content' => '<!-- wp:paragraph --><p>This is a demonstration Contact page. Set receiver addresses under Appearance → Notebook settings to enable the form below.</p><!-- /wp:paragraph -->' ),
+	);
+	foreach ( $pages as $slug => $page ) {
+		if ( get_page_by_path( $slug ) ) {
+			continue;
+		}
+		wp_insert_post( array(
+			'post_type' => 'page',
+			'post_status' => 'publish',
+			'post_name' => $slug,
+			'post_title' => $page['title'],
+			'post_content' => $page['content'],
+			'page_template' => 'page-' . $slug . '.php',
+			'meta_input' => array( '_knt_demo_page' => 1 ),
+		) );
+	}
+}
+
 function knt_import_demo(): array {
 	$created = 0;
 	$skipped = 0;
 	$stories = knt_demo_posts();
+	$feature_demo = function_exists( 'knt_featured_post' ) && ! knt_featured_post();
+	knt_demo_add_pages();
 	foreach ( $stories as $index => $story ) {
 		if ( knt_demo_imported_id( $story['key'] ) ) {
 			++$skipped;
@@ -116,7 +140,7 @@ function knt_import_demo(): array {
 			'post_content' => $story['content'],
 			'post_category' => array( (int) ( is_array( $term ) ? $term['term_id'] : $term ) ),
 			'post_date' => wp_date( 'Y-m-d H:i:s', time() - ( count( $stories ) - $index ) * DAY_IN_SECONDS ),
-			'meta_input' => array( '_knt_demo_key' => $story['key'], '_kn_demo_art' => $story['art'] ),
+			'meta_input' => array( '_knt_demo_key' => $story['key'], '_kn_demo_art' => $story['art'], '_knt_featured' => $feature_demo && 'first-hour' === $story['key'] ? '1' : '0' ),
 		), true );
 		if ( is_wp_error( $post_id ) ) {
 			return array( 'created' => $created, 'skipped' => $skipped, 'error' => $post_id->get_error_message() );
@@ -160,7 +184,7 @@ function knt_demo_page(): void {
 		<?php if ( isset( $_GET['knt_error'] ) ) : ?>
 			<div class="notice notice-error"><p><?php echo esc_html( sanitize_text_field( wp_unslash( $_GET['knt_error'] ) ) ); ?></p></div>
 		<?php endif; ?>
-		<p><?php esc_html_e( 'This adds five clearly labeled demonstration posts with editable blocks, category tabs, the original home introduction, and the illustrated grid. On a fresh site, the newest demo post becomes the featured story.', 'kamal-notebook-tools' ); ?></p>
+		<p><?php esc_html_e( 'This adds five clearly labeled demonstration posts with editable blocks, category tabs, the original home introduction, and the illustrated grid. If no article is featured yet, one demo post is marked deliberately; you can change that in any post editor.', 'kamal-notebook-tools' ); ?></p>
 		<p><?php esc_html_e( 'The first import also sets the homepage to latest posts and resets Notebook settings to the prototype defaults. Later imports leave your settings alone. Your site name, logo, existing posts, and media stay as they are. The closest match is an otherwise empty WordPress site.', 'kamal-notebook-tools' ); ?></p>
 		<?php if ( $published ) : ?>
 			<p><strong><?php echo esc_html( sprintf( _n( 'This site already has %d published post. Demo posts will appear alongside it.', 'This site already has %d published posts. Demo posts will appear alongside them.', $published, 'kamal-notebook-tools' ), $published ) ); ?></strong></p>

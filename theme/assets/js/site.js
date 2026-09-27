@@ -149,5 +149,6 @@
     if (event.target === dialog) dialog.close();
   });
   window.addEventListener("storage", syncSaved);
+  document.addEventListener("knt:lessonchange", syncSaved);
   syncSaved();
 })();

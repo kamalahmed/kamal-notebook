@@ -1,10 +1,10 @@
 (() => {
   "use strict";
 
-  const { createElement: h } = wp.element;
-  const { useSelect } = wp.data;
+  const { createElement: h, Fragment } = wp.element;
+  const { useSelect, useDispatch, select, dispatch } = wp.data;
   const { registerPlugin } = wp.plugins;
-  const { PluginDocumentSettingPanel } = wp.editor;
+  const { PluginDocumentSettingPanel, PluginPostStatusInfo } = wp.editor;
   const { __ } = wp.i18n;
 
   function plainText(value) {
@@ -46,16 +46,37 @@
   }
 
   function OutlinePreview() {
-    const { blocks, postType } = useSelect((select) => ({
+    const { blocks, postType, postId, featured } = useSelect((select) => ({
       blocks: select("core/block-editor").getBlocks(),
       postType: select("core/editor").getCurrentPostType(),
+      postId: select("core/editor").getCurrentPostId(),
+      featured: Boolean(select("core/editor").getEditedPostAttribute("meta")?._knt_featured),
     }), []);
+    const { editPost } = useDispatch("core/editor");
     if (postType !== "post") return null;
 
     const headings = collectHeadings(blocks);
     const tutorial = isTutorial(blocks);
-    return h(
-      PluginDocumentSettingPanel,
+    function showOutline() {
+      const panel = "kn-editor-outline/kn-outline-preview";
+      if (!select("core/editor").isEditorPanelOpened(panel)) {
+        dispatch("core/editor").toggleEditorPanelOpened(panel);
+      }
+      requestAnimationFrame(() => document.querySelector(".kn-editor-toc-panel")?.scrollIntoView({ block: "nearest", behavior: "smooth" }));
+    }
+    return h(Fragment, null,
+      h(PluginPostStatusInfo, { className: "kn-editor-post-tools" },
+        window.knFeatureAvailable ? h("label", { className: "kn-editor-featured" },
+          h("input", { type: "checkbox", checked: featured, onChange: (event) => editPost({ meta: { _knt_featured: event.target.checked } }) }),
+          h("span", null, __("Featured article on the homepage", "kamal-notebook"))
+        ) : null,
+        h("p", null, __("Set the cover in Post → Featured image.", "kamal-notebook")),
+        window.knCoverStudioBase && postId ? h("a", { href: `${window.knCoverStudioBase}${Number(postId)}`, className: "kn-editor-cover-link" }, __("Create an illustrated cover ↗", "kamal-notebook")) : null,
+        h("button", { type: "button", className: "kn-editor-open-toc", onClick: showOutline },
+          __("Preview table of contents", "kamal-notebook"), " · ", String(headings.length).padStart(2, "0")
+        )
+      ),
+      h(PluginDocumentSettingPanel,
       {
         name: "kn-outline-preview",
         title: __("Table of contents preview", "kamal-notebook"),
@@ -90,7 +111,8 @@
           h("span", { className: "toc-end-mark", "aria-hidden": "true" }, "✳"),
           h("span", null, tutorial ? __("Go at your own pace.", "kamal-notebook") : __("Take your time with this one.", "kamal-notebook")),
         ),
-      ),
+      )
+      )
     );
   }
 

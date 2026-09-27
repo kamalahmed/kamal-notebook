@@ -1,11 +1,16 @@
 (() => {
   "use strict";
   const progress = document.querySelector("#reading-progress");
-  const headings = [
-    ...document.querySelectorAll(".article-content h2[id]"),
-  ].filter((heading) => !heading.closest(".kn-key-concepts, .kn-takeaways"));
-  const links = [...document.querySelectorAll(".toc-link")];
+  let headings = [];
+  let links = [];
   if (!progress) return;
+
+  function refreshOutline() {
+    headings = [...document.querySelectorAll(".article-content h2[id]")]
+      .filter((heading) => !heading.closest(".kn-key-concepts, .kn-takeaways"));
+    links = [...document.querySelectorAll(".toc-link")];
+    update();
+  }
 
   let scheduled = false;
   function update() {
@@ -31,5 +36,6 @@
   }
   addEventListener("scroll", schedule, { passive: true });
   addEventListener("resize", schedule);
-  update();
+  document.addEventListener("knt:lessonchange", refreshOutline);
+  refreshOutline();
 })();

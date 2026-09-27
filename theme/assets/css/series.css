@@ -1,0 +1,78 @@
+/* A course joins separate posts while keeping each lesson a normal article. */
+.knt-series-nav {
+  margin-top: 72px;
+  padding-top: 23px;
+  border-top: 2px solid var(--ink);
+}
+.knt-series-head {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.knt-series-head > span {
+  color: var(--accent-dark);
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.14em;
+}
+.knt-series-head strong {
+  color: var(--ink);
+  font: 500 clamp(29px, 3.4vw, 40px)/1.12 var(--serif);
+  letter-spacing: -0.045em;
+}
+.knt-series-head small {
+  color: var(--ink-muted);
+  font: 12px/1.5 var(--sans);
+}
+.knt-series-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px;
+}
+.article-content .knt-series-links a {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-content: start;
+  gap: 9px 12px;
+  min-height: 124px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+  text-decoration: none;
+}
+.knt-series-links a > span:first-child {
+  grid-column: 1 / -1;
+  color: var(--ink-muted);
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.04em;
+}
+.knt-series-links a > strong {
+  color: var(--ink);
+  font: 500 22px/1.2 var(--serif);
+  letter-spacing: -0.03em;
+}
+.knt-series-links a > span:last-child {
+  align-self: start;
+  color: var(--accent-dark);
+  font: 25px/1 var(--serif);
+}
+.article-content .knt-series-links a:hover > strong,
+.article-content .knt-series-links a:focus-visible > strong {
+  color: var(--accent-dark);
+}
+.knt-series-nav[aria-busy="true"] .knt-series-links {
+  opacity: 0.65;
+}
+.knt-series-nav .screen-reader-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 600px) {
+  .knt-series-links { grid-template-columns: 1fr; gap: 0; }
+  .article-content .knt-series-links a { min-height: 0; padding: 18px 0 22px; }
+}

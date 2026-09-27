@@ -3,7 +3,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KN_VERSION = '1.1.0';
+const KN_VERSION = '1.2.0';
 
 function kn_setup(): void {
 	add_theme_support( 'title-tag' );
@@ -23,8 +23,12 @@ add_action( 'after_setup_theme', 'kn_setup' );
 function kn_assets(): void {
 	wp_enqueue_style( 'kn-site', get_theme_file_uri( 'assets/css/site.css' ), array(), KN_VERSION );
 	wp_enqueue_style( 'kn-lessons', get_theme_file_uri( 'assets/css/lessons.css' ), array( 'kn-site' ), KN_VERSION );
+	if ( is_page( array( 'about', 'contact' ) ) || is_page_template( array( 'page-about.php', 'page-contact.php' ) ) ) {
+		wp_enqueue_style( 'kn-pages', get_theme_file_uri( 'assets/css/pages.css' ), array( 'kn-site' ), KN_VERSION );
+	}
 	wp_enqueue_script( 'kn-site', get_theme_file_uri( 'assets/js/site.js' ), array(), KN_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
 	if ( is_singular( 'post' ) ) {
+		wp_enqueue_style( 'kn-series', get_theme_file_uri( 'assets/css/series.css' ), array( 'kn-lessons' ), KN_VERSION );
 		wp_enqueue_script( 'kn-reader', get_theme_file_uri( 'assets/js/reader.js' ), array(), KN_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
 	}
 }
@@ -32,6 +36,10 @@ add_action( 'wp_enqueue_scripts', 'kn_assets' );
 
 function kn_editor_outline_assets(): void {
 	wp_enqueue_script( 'kn-editor-outline', get_theme_file_uri( 'assets/js/editor-outline.js' ), array( 'wp-plugins', 'wp-editor', 'wp-element', 'wp-data', 'wp-block-editor', 'wp-i18n' ), KN_VERSION, true );
+	wp_add_inline_script( 'kn-editor-outline', 'window.knFeatureAvailable = ' . ( function_exists( 'knt_featured_post' ) ? 'true' : 'false' ) . ';', 'before' );
+	if ( function_exists( 'knt_cover_studio_page' ) ) {
+		wp_add_inline_script( 'kn-editor-outline', 'window.knCoverStudioBase = ' . wp_json_encode( admin_url( 'edit.php?page=knt-cover-studio&post=' ) ) . ';', 'before' );
+	}
 	wp_enqueue_style( 'kn-editor-outline', get_theme_file_uri( 'assets/css/editor-outline.css' ), array(), KN_VERSION );
 }
 add_action( 'enqueue_block_editor_assets', 'kn_editor_outline_assets' );
@@ -55,6 +63,7 @@ function kn_defaults(): array {
 		'save_enabled'   => '1',
 		'share_enabled'  => '1',
 		'feedback_enabled' => '1',
+		'contact_email'  => '',
 	);
 }
 
@@ -74,6 +83,15 @@ function kn_sanitize_settings( $input ): array {
 	foreach ( array( 'save_enabled', 'share_enabled', 'feedback_enabled' ) as $key ) {
 		$clean[ $key ] = empty( $input[ $key ] ) ? '0' : '1';
 	}
+	$receivers = array();
+	$raw_receivers = isset( $input['contact_email'] ) && is_string( $input['contact_email'] ) ? $input['contact_email'] : '';
+	foreach ( preg_split( '/[,;\s]+/', $raw_receivers ) as $candidate ) {
+		$email = sanitize_email( $candidate );
+		if ( $email === $candidate && is_email( $email ) ) {
+			$receivers[] = $email;
+		}
+	}
+	$clean['contact_email'] = implode( ', ', array_unique( $receivers ) );
 	return $clean;
 }
 
@@ -124,6 +142,9 @@ function kn_render_settings(): void {
 			<?php kn_setting_checkbox( 'save_enabled', __( 'Save stories in the reader’s browser', 'kamal-notebook' ) ); ?>
 			<?php kn_setting_checkbox( 'share_enabled', __( 'Share via device menu or copy link', 'kamal-notebook' ) ); ?>
 			<?php kn_setting_checkbox( 'feedback_enabled', __( 'Private “Was this useful?” feedback', 'kamal-notebook' ) ); ?>
+			<h2><?php esc_html_e( 'Contact page', 'kamal-notebook' ); ?></h2>
+			<p><?php esc_html_e( 'Enter one or more receiver addresses, separated by commas. The form appears on the Contact page after an address is saved. Delivery uses this site’s WordPress mail configuration.', 'kamal-notebook' ); ?></p>
+			<?php kn_setting_field( 'contact_email', __( 'Send messages to', 'kamal-notebook' ) ); ?>
 			<?php submit_button( __( 'Save notebook settings', 'kamal-notebook' ) ); ?>
 		</form>
 		<div class="kn-admin-help">
@@ -131,9 +152,10 @@ function kn_render_settings(): void {
 			<ol>
 				<li><?php esc_html_e( 'Open Posts → Add New and choose Guided Article or Quick Note.', 'kamal-notebook' ); ?></li>
 				<li><?php esc_html_e( 'Replace the visible draft prompts, add sections from the pattern inserter, and set a short excerpt.', 'kamal-notebook' ); ?></li>
-				<li><?php esc_html_e( 'Use Heading 2 for sections. The article table of contents builds itself.', 'kamal-notebook' ); ?></li>
+				<li><?php esc_html_e( 'In the post editor, mark a post as the featured article and set its Featured image. Without an image, Notebook uses a bundled illustration.', 'kamal-notebook' ); ?></li>
+				<li><?php esc_html_e( 'Use Heading 2 for sections. The article table of contents builds itself; its preview is in the Post sidebar.', 'kamal-notebook' ); ?></li>
 				<li><?php esc_html_e( 'Use the Notebook Code block for highlighted code and a copy button.', 'kamal-notebook' ); ?></li>
-				<li><?php esc_html_e( 'For a long tutorial, choose Tutorial with lessons; add Tutorial lesson and Visual walkthrough patterns as needed.', 'kamal-notebook' ); ?></li>
+				<li><?php esc_html_e( 'For a long course, assign posts to a Series and give each lesson an order. Add Visual walkthrough patterns, images, and code within each lesson.', 'kamal-notebook' ); ?></li>
 			</ol>
 			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php' ) ); ?>"><?php esc_html_e( 'Write a new post', 'kamal-notebook' ); ?></a>
 			<?php if ( function_exists( 'knt_demo_page' ) ) : ?>
@@ -185,15 +207,15 @@ function kn_story_excerpt( int $post_id, int $words = 28 ): string {
 	return wp_trim_words( wp_strip_all_tags( get_the_excerpt( $post_id ) ), $words, '…' );
 }
 
-function kn_post_image( int $post_id, string $size = 'kn-card' ): string {
+function kn_post_image( int $post_id, string $size = 'kn-card', bool $eager = false ): string {
 	if ( has_post_thumbnail( $post_id ) ) {
-		return get_the_post_thumbnail( $post_id, $size, array( 'loading' => 'lazy', 'decoding' => 'async' ) );
+		return get_the_post_thumbnail( $post_id, $size, array( 'loading' => $eager ? 'eager' : 'lazy', 'decoding' => 'async', 'fetchpriority' => $eager ? 'high' : 'auto' ) );
 	}
 	$art = array( 'art-programming.svg', 'art-ai.svg', 'art-tech.svg', 'art-journal.svg', 'art-questions.svg' );
 	$demo_art = (string) get_post_meta( $post_id, '_kn_demo_art', true );
 	$file = in_array( $demo_art, $art, true ) ? $demo_art : $art[ $post_id % count( $art ) ];
 	$src = get_theme_file_uri( 'assets/images/' . $file );
-	return sprintf( '<img src="%s" alt="" width="640" height="470" loading="lazy" decoding="async">', esc_url( $src ) );
+	return sprintf( '<img src="%s" alt="" width="640" height="470" loading="%s" decoding="async"%s>', esc_url( $src ), $eager ? 'eager' : 'lazy', $eager ? ' fetchpriority="high"' : '' );
 }
 
 /** Recognize the tutorial starter by its block class, not by words in prose. */
@@ -257,5 +279,14 @@ function kn_archive_url(): string {
 }
 
 function kn_menu_fallback(): void {
-	printf( '<ul><li><a href="%s">%s</a></li><li><a href="%s">%s</a></li></ul>', esc_url( kn_archive_url() ), esc_html__( 'The notebook', 'kamal-notebook' ), esc_url( kn_archive_url() . '#stories' ), esc_html__( 'Explore stories', 'kamal-notebook' ) );
+	echo '<ul>';
+	printf( '<li><a href="%s">%s</a></li>', esc_url( kn_archive_url() ), esc_html__( 'The notebook', 'kamal-notebook' ) );
+	printf( '<li><a href="%s">%s</a></li>', esc_url( kn_archive_url() . '#stories' ), esc_html__( 'Explore stories', 'kamal-notebook' ) );
+	foreach ( array( 'about' => __( 'About', 'kamal-notebook' ), 'contact' => __( 'Contact', 'kamal-notebook' ) ) as $slug => $label ) {
+		$page = get_page_by_path( $slug );
+		if ( $page && 'publish' === $page->post_status ) {
+			printf( '<li><a href="%s">%s</a></li>', esc_url( get_permalink( $page ) ), esc_html( $label ) );
+		}
+	}
+	echo '</ul>';
 }
