@@ -69,6 +69,25 @@
 .knt-editor-block .cm-number {
   color: #c5b9e9;
 }
+.knt-editor-block .cm-tag,
+.knt-editor-block .cm-qualifier,
+.knt-editor-block .cm-meta {
+  color: #ffb38c;
+}
+.knt-editor-block .cm-attribute,
+.knt-editor-block .cm-property,
+.knt-editor-block .cm-variable,
+.knt-editor-block .cm-variable-2,
+.knt-editor-block .cm-def {
+  color: #b7d9ee;
+}
+.knt-editor-block .cm-atom,
+.knt-editor-block .cm-builtin {
+  color: #c6b9ee;
+}
+.knt-editor-block .cm-operator {
+  color: #edb0a3;
+}
 @media (max-width: 600px) {
   .knt-editor-toolbar {
     grid-template-columns: 1fr;

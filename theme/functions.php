@@ -3,7 +3,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KN_VERSION = '1.0.0';
+const KN_VERSION = '1.1.0';
 
 function kn_setup(): void {
 	add_theme_support( 'title-tag' );
@@ -13,7 +13,7 @@ function kn_setup(): void {
 	add_theme_support( 'responsive-embeds' );
 	add_theme_support( 'custom-logo', array( 'height' => 96, 'width' => 96, 'flex-height' => true, 'flex-width' => true ) );
 	add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' ) );
-	add_editor_style( 'assets/css/editor.css' );
+	add_editor_style( array( 'assets/css/editor.css', 'assets/css/lessons.css' ) );
 	register_nav_menus( array( 'primary' => __( 'Primary navigation', 'kamal-notebook' ) ) );
 	add_image_size( 'kn-card', 900, 640, true );
 	add_image_size( 'kn-feature', 1200, 900, true );
@@ -22,12 +22,19 @@ add_action( 'after_setup_theme', 'kn_setup' );
 
 function kn_assets(): void {
 	wp_enqueue_style( 'kn-site', get_theme_file_uri( 'assets/css/site.css' ), array(), KN_VERSION );
+	wp_enqueue_style( 'kn-lessons', get_theme_file_uri( 'assets/css/lessons.css' ), array( 'kn-site' ), KN_VERSION );
 	wp_enqueue_script( 'kn-site', get_theme_file_uri( 'assets/js/site.js' ), array(), KN_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
 	if ( is_singular( 'post' ) ) {
 		wp_enqueue_script( 'kn-reader', get_theme_file_uri( 'assets/js/reader.js' ), array(), KN_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'kn_assets' );
+
+function kn_editor_outline_assets(): void {
+	wp_enqueue_script( 'kn-editor-outline', get_theme_file_uri( 'assets/js/editor-outline.js' ), array( 'wp-plugins', 'wp-editor', 'wp-element', 'wp-data', 'wp-block-editor', 'wp-i18n' ), KN_VERSION, true );
+	wp_enqueue_style( 'kn-editor-outline', get_theme_file_uri( 'assets/css/editor-outline.css' ), array(), KN_VERSION );
+}
+add_action( 'enqueue_block_editor_assets', 'kn_editor_outline_assets' );
 
 function kn_preload_fonts(): void {
 	$base = get_theme_file_uri( 'assets/fonts/' );
@@ -87,7 +94,7 @@ function kn_render_settings(): void {
 	?>
 	<div class="wrap kn-admin">
 		<h1><?php esc_html_e( 'Notebook settings', 'kamal-notebook' ); ?></h1>
-		<p class="description"><?php esc_html_e( 'Choose the archive view and edit the short introductions. Write articles in Posts using the Guided Article or Quick Note starter.', 'kamal-notebook' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Choose the archive view and edit the short introductions. Write posts with the Guided Article, Quick Note, or Tutorial with lessons starter.', 'kamal-notebook' ); ?></p>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'kn_settings' ); ?>
 			<h2><?php esc_html_e( 'Blog listing', 'kamal-notebook' ); ?></h2>
@@ -126,8 +133,12 @@ function kn_render_settings(): void {
 				<li><?php esc_html_e( 'Replace the visible draft prompts, add sections from the pattern inserter, and set a short excerpt.', 'kamal-notebook' ); ?></li>
 				<li><?php esc_html_e( 'Use Heading 2 for sections. The article table of contents builds itself.', 'kamal-notebook' ); ?></li>
 				<li><?php esc_html_e( 'Use the Notebook Code block for highlighted code and a copy button.', 'kamal-notebook' ); ?></li>
+				<li><?php esc_html_e( 'For a long tutorial, choose Tutorial with lessons; add Tutorial lesson and Visual walkthrough patterns as needed.', 'kamal-notebook' ); ?></li>
 			</ol>
 			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php' ) ); ?>"><?php esc_html_e( 'Write a new post', 'kamal-notebook' ); ?></a>
+			<?php if ( function_exists( 'knt_demo_page' ) ) : ?>
+				<a class="button" href="<?php echo esc_url( admin_url( 'themes.php?page=knt-demo-import' ) ); ?>"><?php esc_html_e( 'Import the demonstration site', 'kamal-notebook' ); ?></a>
+			<?php endif; ?>
 		</div>
 	</div>
 	<?php
@@ -179,8 +190,24 @@ function kn_post_image( int $post_id, string $size = 'kn-card' ): string {
 		return get_the_post_thumbnail( $post_id, $size, array( 'loading' => 'lazy', 'decoding' => 'async' ) );
 	}
 	$art = array( 'art-programming.svg', 'art-ai.svg', 'art-tech.svg', 'art-journal.svg', 'art-questions.svg' );
-	$src = get_theme_file_uri( 'assets/images/' . $art[ $post_id % count( $art ) ] );
+	$demo_art = (string) get_post_meta( $post_id, '_kn_demo_art', true );
+	$file = in_array( $demo_art, $art, true ) ? $demo_art : $art[ $post_id % count( $art ) ];
+	$src = get_theme_file_uri( 'assets/images/' . $file );
 	return sprintf( '<img src="%s" alt="" width="640" height="470" loading="lazy" decoding="async">', esc_url( $src ) );
+}
+
+/** Recognize the tutorial starter by its block class, not by words in prose. */
+function kn_has_tutorial_layout( string $content ): bool {
+	$has_tutorial = static function ( array $blocks ) use ( &$has_tutorial ): bool {
+		foreach ( $blocks as $block ) {
+			$classes = preg_split( '/\s+/', (string) ( $block['attrs']['className'] ?? '' ) );
+			if ( in_array( 'kn-tutorial', $classes, true ) || $has_tutorial( $block['innerBlocks'] ?? array() ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	return $has_tutorial( parse_blocks( $content ) );
 }
 
 /** Add stable IDs to rendered H2 headings and return the linked outline. */

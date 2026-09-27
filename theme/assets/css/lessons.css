@@ -1,0 +1,117 @@
+/* Tutorial lessons keep the notebook's editorial rhythm in the editor and on the site. */
+.article-content .kn-tutorial-intro,
+.editor-styles-wrapper .kn-tutorial-intro {
+  margin: 0 0 70px;
+  padding: 24px 0 24px 25px;
+  border-left: 3px solid #e45e3a;
+}
+.article-content .kn-tutorial-intro > p:last-child,
+.editor-styles-wrapper .kn-tutorial-intro > p:last-child {
+  margin-bottom: 0;
+  color: #173a31;
+  font: 500 clamp(22px, 2.5vw, 29px)/1.45 Fraunces, Georgia, serif;
+}
+.article-content .kn-tutorial-eyebrow,
+.editor-styles-wrapper .kn-tutorial-eyebrow,
+.article-content .kn-lesson-label,
+.editor-styles-wrapper .kn-lesson-label,
+.article-content .kn-visual-label,
+.editor-styles-wrapper .kn-visual-label {
+  margin: 0 0 18px;
+  color: #a83e23;
+  font: 500 11px/1.4 "IBM Plex Mono", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.article-content .kn-lesson,
+.editor-styles-wrapper .kn-lesson {
+  margin: 0 0 75px;
+  padding-top: 26px;
+  border-top: 1px solid #173a31;
+}
+.article-content .kn-lesson > h2,
+.editor-styles-wrapper .kn-lesson > h2 {
+  margin: 0 0 25px;
+  font: 500 clamp(39px, 5vw, 58px)/1.05 Fraunces, Georgia, serif;
+  letter-spacing: -.05em;
+}
+.article-content .kn-lesson > p:not(.kn-lesson-label),
+.editor-styles-wrapper .kn-lesson > p:not(.kn-lesson-label) {
+  margin-bottom: 25px;
+}
+.article-content .kn-visual-walkthrough,
+.editor-styles-wrapper .kn-visual-walkthrough {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  gap: 0;
+  margin: 40px 0;
+  border: 1px solid #c9cbbd;
+  background: #e8ecdb;
+}
+.article-content .kn-visual-walkthrough > .wp-block-image,
+.editor-styles-wrapper .kn-visual-walkthrough > .wp-block-image {
+  align-self: stretch;
+  margin: 0;
+  padding: 17px;
+  background: #d9e2ca;
+}
+.article-content .kn-visual-walkthrough img,
+.editor-styles-wrapper .kn-visual-walkthrough img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4/3;
+  object-fit: contain;
+}
+.article-content .kn-visual-walkthrough figcaption,
+.editor-styles-wrapper .kn-visual-walkthrough figcaption {
+  margin: 11px 0 0;
+  color: #53675d;
+  font: 11px/1.5 "IBM Plex Mono", monospace;
+}
+.article-content .kn-visual-copy,
+.editor-styles-wrapper .kn-visual-copy {
+  align-self: center;
+  padding: clamp(23px, 3vw, 38px);
+}
+.article-content .kn-visual-copy h3,
+.editor-styles-wrapper .kn-visual-copy h3 {
+  margin: 0 0 15px;
+  color: #173a31;
+  font: 500 29px/1.12 Fraunces, Georgia, serif;
+  letter-spacing: -.04em;
+}
+.article-content .kn-visual-copy > p:last-child,
+.editor-styles-wrapper .kn-visual-copy > p:last-child {
+  margin-bottom: 0;
+  color: #53675d;
+  font: 14px/1.6 "DM Sans", sans-serif;
+}
+@media (max-width: 700px) {
+  .article-content .kn-visual-walkthrough,
+  .editor-styles-wrapper .kn-visual-walkthrough {
+    grid-template-columns: 1fr;
+  }
+}
+.article-shell.is-legacy {
+  display: block;
+}
+.article-shell.is-legacy .article-content {
+  width: min(100%, 1200px);
+  max-width: none;
+  margin-inline: auto;
+}
+.kn-legacy-frame {
+  display: block;
+  width: 100%;
+  min-height: 800px;
+  border: 0;
+  background: #faf7f2;
+}
+.article-shell.is-legacy .article-end,
+.article-shell.is-legacy .reader-actions,
+.article-shell.is-legacy .reader-status,
+.article-shell.is-legacy .feedback {
+  max-width: 720px;
+  margin-inline: auto;
+}

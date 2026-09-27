@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Kamal Notebook Tools
  * Description: An editable code block and simple reader feedback for Kamal Notebook.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Requires at least: 6.6
  * Requires PHP: 8.0
  * Author: Kamal Ahmed
@@ -11,7 +11,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KNT_VERSION = '1.0.0';
+const KNT_VERSION = '1.1.0';
+require_once __DIR__ . '/includes/demo-import.php';
 
 function knt_register_code_block(): void {
 	wp_register_script( 'knt-codemirror-python', plugins_url( 'assets/python-mode.js', __FILE__ ), array( 'wp-codemirror' ), KNT_VERSION, true );
@@ -21,6 +22,22 @@ function knt_register_code_block(): void {
 	register_block_type( __DIR__ . '/blocks/code', array( 'render_callback' => 'knt_render_code' ) );
 }
 add_action( 'init', 'knt_register_code_block' );
+
+function knt_register_code_pattern(): void {
+	$example = array(
+		'language' => 'javascript',
+		'filename' => 'example.js',
+		'code'     => "const greeting = 'Hello, notebook';\nconsole.log(greeting);",
+	);
+	register_block_pattern( 'kamal-notebook/highlighted-code', array(
+		'title'       => __( 'Highlighted code example', 'kamal-notebook-tools' ),
+		'description' => __( 'A working, editable code sample with language colors and a copy button.', 'kamal-notebook-tools' ),
+		'categories'  => array( 'kn-writing', 'text' ),
+		'keywords'    => array( 'code', 'highlight', 'syntax', 'tutorial' ),
+		'content'     => '<!-- wp:kamal-notebook/code ' . wp_json_encode( $example ) . ' /-->',
+	) );
+}
+add_action( 'init', 'knt_register_code_pattern', 20 );
 
 function knt_editor_assets(): void {
 	wp_enqueue_code_editor( array( 'type' => 'text/javascript', 'codemirror' => array( 'lint' => false, 'lineNumbers' => true, 'lineWrapping' => false ) ) );

@@ -5,7 +5,17 @@ get_header();
 while ( have_posts() ) :
 	the_post();
 	$post_id = get_the_ID();
-	list( $content, $outline ) = kn_prepare_article( apply_filters( 'the_content', get_the_content() ) );
+	$raw_content = get_the_content();
+	$is_legacy_tutorial = str_contains( $raw_content, 'lessons-container' ) && str_contains( $raw_content, '<style>' ) && str_contains( $raw_content, '<script>' );
+	$is_tutorial = $is_legacy_tutorial || kn_has_tutorial_layout( $raw_content );
+	$rendered_content = apply_filters( 'the_content', $raw_content );
+	list( $content, $outline ) = $is_legacy_tutorial ? array( $rendered_content, array() ) : kn_prepare_article( $rendered_content );
+	if ( $is_legacy_tutorial ) {
+		wp_enqueue_script( 'kn-legacy-tutorial', get_theme_file_uri( 'assets/js/legacy-tutorial.js' ), array(), KN_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
+		$legacy_mobile = '<style>@media(max-width:700px){.top-nav{height:auto;min-height:48px;flex-wrap:wrap;gap:8px;padding:10px 16px}.nav-title{line-height:1.4}.lesson-header{display:block}.lesson-number{display:block;margin-bottom:8px}.lesson [style*="grid-template-columns"]{grid-template-columns:1fr!important}}</style>';
+		$legacy_resize = '<script>(function(){function report(){parent.postMessage({knLegacyHeight:Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)},"*")}addEventListener("load",report);if(window.ResizeObserver){new ResizeObserver(report).observe(document.body)}else{setInterval(report,500)}requestAnimationFrame(report)})();</script>';
+		$legacy_doc = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body>' . $content . $legacy_mobile . $legacy_resize . '</body></html>';
+	}
 	$related = get_posts( array(
 		'numberposts' => 1,
 		'post_type'   => 'post',
@@ -17,14 +27,14 @@ while ( have_posts() ) :
 		$related = get_posts( array( 'numberposts' => 1, 'post_type' => 'post', 'post_status' => 'publish', 'exclude' => array( $post_id ) ) );
 	}
 	?>
-	<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+	<article id="post-<?php the_ID(); ?>" <?php post_class( $is_tutorial ? 'kn-article-tutorial' : '' ); ?>>
 		<header class="article-hero container">
 			<div class="article-hero-copy">
 				<a class="back-link" href="<?php echo esc_url( kn_archive_url() . '#stories' ); ?>">
 					<span aria-hidden="true">←</span> <?php esc_html_e( 'Back to the notebook', 'kamal-notebook' ); ?>
 				</a>
 				<div class="article-kicker">
-					<span><?php echo esc_html( kn_post_topic( $post_id ) ); ?> / <?php esc_html_e( 'STORY', 'kamal-notebook' ); ?></span>
+					<span><?php echo esc_html( kn_post_topic( $post_id ) ); ?> / <?php echo esc_html( $is_tutorial ? __( 'TUTORIAL', 'kamal-notebook' ) : __( 'STORY', 'kamal-notebook' ) ); ?></span>
 					<span class="kicker-rule"></span>
 					<span><?php echo esc_html( kn_reading_minutes( $post_id ) ); ?> <?php esc_html_e( 'MIN READ', 'kamal-notebook' ); ?></span>
 				</div>
@@ -54,17 +64,17 @@ while ( have_posts() ) :
 			<span><?php esc_html_e( 'THE IDEA, THEN THE DETAILS', 'kamal-notebook' ); ?></span>
 			<span aria-hidden="true">↓</span>
 		</div>
-		<div class="article-shell container <?php echo $outline ? 'has-outline' : 'no-outline'; ?>">
+		<div class="article-shell container <?php echo $outline ? 'has-outline' : 'no-outline'; ?><?php echo $is_legacy_tutorial ? ' is-legacy' : ''; ?>">
 			<?php if ( $outline ) : ?>
 				<aside class="toc-rail">
 					<div class="toc-sticky">
-						<div class="toc-label"><?php esc_html_e( 'ON THIS PAGE', 'kamal-notebook' ); ?><span><?php echo esc_html( sprintf( '%02d', count( $outline ) ) ); ?></span></div>
+						<div class="toc-label"><?php echo esc_html( $is_tutorial ? __( 'THE LESSONS', 'kamal-notebook' ) : __( 'ON THIS PAGE', 'kamal-notebook' ) ); ?><span><?php echo esc_html( sprintf( '%02d', count( $outline ) ) ); ?></span></div>
 						<nav aria-label="<?php esc_attr_e( 'Article sections', 'kamal-notebook' ); ?>">
 							<?php foreach ( $outline as $item ) : ?>
 								<a class="toc-link" href="#<?php echo esc_attr( $item['id'] ); ?>"><?php echo esc_html( $item['title'] ); ?></a>
 							<?php endforeach; ?>
 						</nav>
-						<div class="toc-end"><span class="toc-end-mark">✳</span><span><?php esc_html_e( 'Take your time with this one.', 'kamal-notebook' ); ?></span></div>
+						<div class="toc-end"><span class="toc-end-mark">✳</span><span><?php echo esc_html( $is_tutorial ? __( 'Go at your own pace.', 'kamal-notebook' ) : __( 'Take your time with this one.', 'kamal-notebook' ) ); ?></span></div>
 					</div>
 				</aside>
 			<?php endif; ?>
@@ -72,7 +82,7 @@ while ( have_posts() ) :
 			<div class="article-content">
 				<?php if ( $outline ) : ?>
 					<details class="toc-mobile">
-						<summary><?php esc_html_e( 'In this piece', 'kamal-notebook' ); ?> <span aria-hidden="true">↓</span></summary>
+						<summary><?php echo esc_html( $is_tutorial ? __( 'Lessons in this tutorial', 'kamal-notebook' ) : __( 'In this piece', 'kamal-notebook' ) ); ?> <span aria-hidden="true">↓</span></summary>
 						<nav aria-label="<?php esc_attr_e( 'Article sections', 'kamal-notebook' ); ?>">
 							<?php foreach ( $outline as $item ) : ?>
 								<a class="toc-link" href="#<?php echo esc_attr( $item['id'] ); ?>"><?php echo esc_html( $item['title'] ); ?></a>
@@ -81,8 +91,12 @@ while ( have_posts() ) :
 					</details>
 				<?php endif; ?>
 
-				<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered by WordPress block content filters. ?>
-				<div class="article-end"><span class="end-symbol" aria-hidden="true">✳</span><span><?php esc_html_e( 'END OF STORY', 'kamal-notebook' ); ?></span></div>
+				<?php if ( $is_legacy_tutorial ) : ?>
+					<iframe class="kn-legacy-frame" title="<?php esc_attr_e( 'Interactive tutorial lessons', 'kamal-notebook' ); ?>" sandbox="allow-scripts" srcdoc="<?php echo esc_attr( $legacy_doc ); ?>"></iframe>
+				<?php else : ?>
+					<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered by WordPress block content filters. ?>
+				<?php endif; ?>
+				<div class="article-end"><span class="end-symbol" aria-hidden="true">✳</span><span><?php echo esc_html( $is_tutorial ? __( 'END OF TUTORIAL', 'kamal-notebook' ) : __( 'END OF STORY', 'kamal-notebook' ) ); ?></span></div>
 
 				<?php if ( '1' === kn_option( 'save_enabled' ) || '1' === kn_option( 'share_enabled' ) ) : ?>
 					<div class="reader-actions" data-post-id="<?php echo esc_attr( $post_id ); ?>" data-title="<?php echo esc_attr( get_the_title() ); ?>" data-url="<?php echo esc_url( get_permalink() ); ?>">

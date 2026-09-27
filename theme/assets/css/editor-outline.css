@@ -1,0 +1,55 @@
+.kn-editor-toc {
+  padding: 4px 0 8px;
+  color: #173a31;
+  font-family: "DM Sans", sans-serif;
+}
+.kn-editor-toc .toc-label {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #173a31;
+  font: 500 10px "IBM Plex Mono", monospace;
+  letter-spacing: 0.11em;
+}
+.kn-editor-toc .toc-label span {
+  color: #5b6a5b;
+}
+.kn-editor-toc ol {
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.kn-editor-toc .toc-link {
+  display: block;
+  margin: 0;
+  padding: 10px 11px 10px 13px;
+  border-left: 2px solid transparent;
+  color: #53675d;
+  font: 12px/1.35 "DM Sans", sans-serif;
+}
+.kn-editor-toc .toc-link:first-child {
+  border-color: #e45e3a;
+  background: #ece8dd;
+  color: #173a31;
+  font-weight: 700;
+}
+.kn-editor-toc .toc-end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid #c9cbbd;
+  color: #53675d;
+  font: italic 16px/1.15 Fraunces, Georgia, serif;
+}
+.kn-editor-toc .toc-end-mark {
+  color: #e45e3a;
+  font: 40px/1 Fraunces, Georgia, serif;
+}
+.kn-editor-toc-empty {
+  margin: 18px 0 0;
+  color: #53675d;
+  font-size: 13px;
+  line-height: 1.5;
+}

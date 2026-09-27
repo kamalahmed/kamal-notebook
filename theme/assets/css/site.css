@@ -2167,6 +2167,32 @@ p {
 .kn-code .token.operator {
   color: #edb0a3;
 }
+.kn-code .token.tag,
+.kn-code .token.selector,
+.kn-code .token.atrule,
+.kn-code .token.important {
+  color: #ffb38c;
+}
+.kn-code .token.attr-name,
+.kn-code .token.property,
+.kn-code .token.variable,
+.kn-code .token.parameter {
+  color: #b7d9ee;
+}
+.kn-code .token.boolean,
+.kn-code .token.constant,
+.kn-code .token.class-name,
+.kn-code .token.builtin {
+  color: #c6b9ee;
+}
+.kn-code .token.attr-value,
+.kn-code .token.char,
+.kn-code .token.regex {
+  color: #e7cf89;
+}
+.kn-code .token.punctuation {
+  color: #d7e3d6;
+}
 .simple-page {
   max-width: 940px;
   padding-top: 80px;
