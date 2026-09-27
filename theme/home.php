@@ -16,7 +16,7 @@ $lead        = $filtered || $paged > 1 || ! function_exists( 'knt_featured_post'
 $archive_url = kn_archive_url();
 $categories  = get_categories( array( 'hide_empty' => true ) );
 // Match the main taxonomy query so valid course pages are never treated as 404s.
-$per_page = $series_term ? max( 1, (int) get_query_var( 'posts_per_page', get_option( 'posts_per_page' ) ) ) : 9;
+$per_page = max( 1, (int) get_query_var( 'posts_per_page', get_option( 'posts_per_page' ) ) );
 $story_query = array(
 	'post_type'           => 'post',
 	'post_status'         => 'publish',
@@ -169,12 +169,18 @@ get_header();
 
 	<?php if ( $stories->max_num_pages > 1 ) : ?>
 		<nav class="pagination" aria-label="<?php esc_attr_e( 'Story pages', 'kamal-notebook' ); ?>">
-			<?php echo paginate_links( array(
+			<?php
+			$pagination = array(
 				'total'     => $stories->max_num_pages,
 				'current'   => $paged,
 				'prev_text' => '← ' . __( 'Previous', 'kamal-notebook' ),
 				'next_text' => __( 'Next', 'kamal-notebook' ) . ' →',
-			) ); ?>
+			);
+			if ( is_front_page() && 'page' === get_option( 'show_on_front' ) ) {
+				$pagination['base'] = str_replace( '999999999', '%#%', add_query_arg( 'paged', 999999999, $archive_url ) );
+				$pagination['format'] = '';
+			}
+			echo paginate_links( $pagination ); ?>
 		</nav>
 	<?php endif; ?>
 </section>

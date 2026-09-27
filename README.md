@@ -39,7 +39,7 @@ Install and activate **Kamal Notebook** and **Kamal Notebook Tools** from the [l
 
 Choose **Appearance → Notebook settings** to set the introduction, reading tools, and contact recipient. Under **Posts**, use **Cover Studio** to compose a featured image and **Series** to group lessons. Each lesson’s editor includes its series and lesson number.
 
-For an example to explore, choose **Appearance → Import Notebook demo**. The importer adds labeled sample articles and a three-part course; repeated imports preserve existing samples and later settings changes. Use a fresh or staging site when trying the complete demo layout.
+For an example to explore, choose **Appearance → Import Notebook demo**. The importer adds labeled articles, a three-part course, and Home, Writing, About, and Contact pages. It can assign the static homepage and posts page while preserving existing content, contact recipients, and customized settings. Repeat imports reuse existing items. Demo content is a starter; transferring a customized site requires a separate content migration.
 
 Contact delivery uses the site’s WordPress mail configuration. Saved articles stay in the reader’s browser; they do not sync between devices.
 

@@ -180,34 +180,54 @@ function knt_demo_imported_id( string $key ): int {
 	return $posts ? (int) $posts[0] : 0;
 }
 
-/** Add editable utility pages only when their slugs are free. */
-function knt_demo_add_pages(): void {
+/** Create the complete page structure without replacing existing page content. */
+function knt_demo_add_pages(): array {
+	$result = array( 'created' => 0, 'existing' => 0, 'ids' => array() );
 	$pages = array(
-		'about' => array( 'title' => 'About', 'content' => '<!-- wp:paragraph --><p>This is demonstration content for your About page. Tell readers who you are and what this notebook covers. Replace this text with your own story before publishing a real site.</p><!-- /wp:paragraph -->' ),
-		'contact' => array( 'title' => 'Contact', 'content' => '<!-- wp:paragraph --><p>This is a demonstration Contact page. Set receiver addresses under Appearance → Notebook settings to enable the form below.</p><!-- /wp:paragraph -->' ),
+		'home' => array( 'title' => 'Home', 'content' => '' ),
+		'writing' => array( 'title' => 'Writing', 'content' => '' ),
+		'about' => array( 'title' => 'About', 'content' => '<!-- wp:paragraph --><p>This is demonstration content for your About page. Tell readers who you are and what this notebook covers.</p><!-- /wp:paragraph -->' ),
+		'contact' => array( 'title' => 'Contact', 'content' => '<!-- wp:paragraph --><p>Have a question about something in the notebook? Leave a note below.</p><!-- /wp:paragraph -->' ),
 	);
 	foreach ( $pages as $slug => $page ) {
-		if ( get_page_by_path( $slug ) ) {
+		$assigned = 'home' === $slug ? (int) get_option( 'page_on_front' ) : ( 'writing' === $slug ? (int) get_option( 'page_for_posts' ) : 0 );
+		$existing = $assigned && 'page' === get_post_type( $assigned ) && 'publish' === get_post_status( $assigned ) ? get_post( $assigned ) : get_page_by_path( $slug );
+		if ( $existing ) {
+			if ( 'publish' !== $existing->post_status ) {
+				return $result + array( 'error' => sprintf( __( 'The %s page exists but is not published. Publish it or change its slug, then import again.', 'kamal-notebook-tools' ), $page['title'] ) );
+			}
+			$result['ids'][ $slug ] = $existing->ID;
+			++$result['existing'];
 			continue;
 		}
-		wp_insert_post( array(
-			'post_type' => 'page',
-			'post_status' => 'publish',
-			'post_name' => $slug,
-			'post_title' => $page['title'],
-			'post_content' => $page['content'],
-			'page_template' => 'page-' . $slug . '.php',
+		$id = wp_insert_post( array(
+			'post_type' => 'page', 'post_status' => 'publish', 'post_name' => $slug,
+			'post_title' => $page['title'], 'post_content' => $page['content'],
+			'page_template' => in_array( $slug, array( 'about', 'contact' ), true ) ? 'page-' . $slug . '.php' : 'default',
 			'meta_input' => array( '_knt_demo_page' => 1 ),
-		) );
+		), true );
+		if ( is_wp_error( $id ) ) {
+			return $result + array( 'error' => $id->get_error_message() );
+		}
+		$result['ids'][ $slug ] = $id;
+		++$result['created'];
 	}
+	if ( $result['ids']['home'] === $result['ids']['writing'] ) {
+		return $result + array( 'error' => __( 'Home and Writing must be different pages. Check Settings → Reading and try again.', 'kamal-notebook-tools' ) );
+	}
+	return $result;
 }
 
-function knt_import_demo(): array {
+function knt_import_demo( bool $setup_home = true ): array {
 	$created = 0;
 	$skipped = 0;
 	$stories = knt_demo_posts();
 	$feature_demo = function_exists( 'knt_featured_post' ) && ! knt_featured_post();
-	knt_demo_add_pages();
+	$pages = knt_demo_add_pages();
+	$page_result = array( 'pages_created' => $pages['created'], 'pages_existing' => $pages['existing'] );
+	if ( isset( $pages['error'] ) ) {
+		return $page_result + array( 'created' => 0, 'skipped' => 0, 'error' => $pages['error'] );
+	}
 	foreach ( $stories as $index => $story ) {
 		if ( knt_demo_imported_id( $story['key'] ) ) {
 			++$skipped;
@@ -218,7 +238,7 @@ function knt_import_demo(): array {
 			$term = wp_insert_term( $story['category'], 'category' );
 		}
 		if ( is_wp_error( $term ) ) {
-			return array( 'created' => $created, 'skipped' => $skipped, 'error' => $term->get_error_message() );
+			return $page_result + array( 'created' => $created, 'skipped' => $skipped, 'error' => $term->get_error_message() );
 		}
 		$post_id = wp_insert_post( array(
 			'post_type' => 'post',
@@ -231,7 +251,7 @@ function knt_import_demo(): array {
 			'meta_input' => array( '_knt_demo_key' => $story['key'], '_kn_demo_art' => $story['art'], '_knt_featured' => $feature_demo && 'first-hour' === $story['key'] ? '1' : '0' ),
 		), true );
 		if ( is_wp_error( $post_id ) ) {
-			return array( 'created' => $created, 'skipped' => $skipped, 'error' => $post_id->get_error_message() );
+			return $page_result + array( 'created' => $created, 'skipped' => $skipped, 'error' => $post_id->get_error_message() );
 		}
 		++$created;
 	}
@@ -239,22 +259,29 @@ function knt_import_demo(): array {
 	$created += $series['created'];
 	$skipped += $series['skipped'];
 	if ( isset( $series['error'] ) ) {
-		return array( 'created' => $created, 'skipped' => $skipped, 'error' => $series['error'] );
+		return $page_result + array( 'created' => $created, 'skipped' => $skipped, 'error' => $series['error'] );
 	}
-	if ( ! get_option( 'knt_demo_setup_applied' ) ) {
+	if ( ! get_option( 'knt_demo_previous_options' ) ) {
 		update_option( 'knt_demo_previous_options', array(
 			'kn_settings' => get_option( 'kn_settings', false ),
 			'show_on_front' => get_option( 'show_on_front' ),
+			'page_on_front' => get_option( 'page_on_front' ),
 			'page_for_posts' => get_option( 'page_for_posts' ),
 		) );
-		if ( function_exists( 'kn_defaults' ) ) {
-			update_option( 'kn_settings', kn_defaults() );
-		}
-		update_option( 'show_on_front', 'posts' );
-		update_option( 'page_for_posts', 0 );
-		update_option( 'knt_demo_setup_applied', 1 );
 	}
-	return array( 'created' => $created, 'skipped' => $skipped );
+	if ( function_exists( 'kn_defaults' ) ) {
+		$settings = get_option( 'kn_settings', array() );
+		update_option( 'kn_settings', array_merge( kn_defaults(), is_array( $settings ) ? $settings : array() ) );
+	}
+	if ( $setup_home ) {
+		update_option( 'page_on_front', $pages['ids']['home'] );
+		update_option( 'page_for_posts', $pages['ids']['writing'] );
+		update_option( 'show_on_front', 'page' );
+	}
+	update_option( 'knt_demo_setup_applied', 2 );
+	flush_rewrite_rules( false );
+	do_action( 'litespeed_purge_all' );
+	return $page_result + array( 'created' => $created, 'skipped' => $skipped );
 }
 
 function knt_demo_menu(): void {
@@ -273,13 +300,13 @@ function knt_demo_page(): void {
 	<div class="wrap kn-admin">
 		<h1><?php esc_html_e( 'Import the Notebook demo', 'kamal-notebook-tools' ); ?></h1>
 		<?php if ( isset( $_GET['knt_created'] ) ) : ?>
-			<div class="notice notice-success"><p><?php echo esc_html( sprintf( __( '%1$d demo stories added; %2$d already present.', 'kamal-notebook-tools' ), absint( $_GET['knt_created'] ), absint( $_GET['knt_skipped'] ?? 0 ) ) ); ?></p></div>
+			<div class="notice notice-success"><p><?php echo esc_html( sprintf( __( '%1$d demo stories added; %2$d already present. %3$d pages created; %4$d existing pages preserved.', 'kamal-notebook-tools' ), absint( $_GET['knt_created'] ), absint( $_GET['knt_skipped'] ?? 0 ), absint( $_GET['knt_pages_created'] ?? 0 ), absint( $_GET['knt_pages_existing'] ?? 0 ) ) ); ?></p></div>
 		<?php endif; ?>
 		<?php if ( isset( $_GET['knt_error'] ) ) : ?>
 			<div class="notice notice-error"><p><?php echo esc_html( sanitize_text_field( wp_unslash( $_GET['knt_error'] ) ) ); ?></p></div>
 		<?php endif; ?>
 		<p><?php esc_html_e( 'This adds five clearly labeled demonstration stories and a three-lesson demonstration course with editable blocks, category tabs, the original home introduction, and the illustrated grid. If no article is featured yet, one demo post is marked deliberately; you can change that in any post editor.', 'kamal-notebook-tools' ); ?></p>
-		<p><?php esc_html_e( 'The first import also sets the homepage to latest posts and resets Notebook settings to the prototype defaults. Later imports leave your settings alone. Your site name, logo, existing posts, and media stay as they are. The closest match is an otherwise empty WordPress site.', 'kamal-notebook-tools' ); ?></p>
+		<p><?php esc_html_e( 'Creates Home, Writing, About, and Contact pages, reusing existing published pages. Home displays the complete Notebook layout; Writing lists your stories. Existing page content, contact recipients, site identity, media, and customized Notebook settings are preserved. The demo is a starter site; it does not copy content from another WordPress installation.', 'kamal-notebook-tools' ); ?></p>
 		<?php if ( $published ) : ?>
 			<p><strong><?php echo esc_html( sprintf( _n( 'This site already has %d published post. Demo posts will appear alongside it.', 'This site already has %d published posts. Demo posts will appear alongside them.', $published, 'kamal-notebook-tools' ), $published ) ); ?></strong></p>
 		<?php endif; ?>
@@ -289,6 +316,7 @@ function knt_demo_page(): void {
 			<?php if ( $published ) : ?>
 				<p><label><input type="checkbox" name="knt_existing_ok" value="1" required> <?php esc_html_e( 'I understand the demo will join my existing posts.', 'kamal-notebook-tools' ); ?></label></p>
 			<?php endif; ?>
+			<p><label><input type="checkbox" name="knt_setup_home" value="1" checked> <?php esc_html_e( 'Set Home as the static homepage and Writing as the posts page.', 'kamal-notebook-tools' ); ?></label></p>
 			<?php submit_button( __( 'Import demo', 'kamal-notebook-tools' ) ); ?>
 		</form>
 	</div>
@@ -303,11 +331,11 @@ function knt_demo_import_action(): void {
 	if ( (int) wp_count_posts( 'post' )->publish && empty( $_POST['knt_existing_ok'] ) ) {
 		wp_die( esc_html__( 'Confirm that existing posts may appear beside the demo.', 'kamal-notebook-tools' ), '', array( 'response' => 400 ) );
 	}
-	$result = knt_import_demo();
+	$result = knt_import_demo( ! empty( $_POST['knt_setup_home'] ) );
 	$url = admin_url( 'themes.php?page=knt-demo-import' );
 	$url = isset( $result['error'] )
 		? add_query_arg( 'knt_error', $result['error'], $url )
-		: add_query_arg( array( 'knt_created' => $result['created'], 'knt_skipped' => $result['skipped'] ), $url );
+		: add_query_arg( array( 'knt_created' => $result['created'], 'knt_skipped' => $result['skipped'], 'knt_pages_created' => $result['pages_created'], 'knt_pages_existing' => $result['pages_existing'] ), $url );
 	wp_safe_redirect( $url );
 	exit;
 }
