@@ -94,6 +94,85 @@
     ctx.fillStyle = c.ink; ctx.beginPath(); ctx.arc(1040, 253 + offset, 19, 0, Math.PI * 2); ctx.fill();
   }
 
+  function drawBotanical(c, rand) {
+    const sway = (rand() - 0.5) * 44;
+    ctx.save(); ctx.translate(954, 725);
+    ctx.strokeStyle = c.paper; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(-45, -150, 62 + sway, -330, sway, -520); ctx.stroke();
+    for (let i = 0; i < 7; i++) {
+      const y = -75 - i * 60, side = i % 2 ? 1 : -1;
+      const x = Math.sin(i * 0.9) * 16;
+      ctx.save(); ctx.translate(x, y); ctx.rotate(side * 0.42);
+      ctx.fillStyle = [c.soft, c.light, c.accent][i % 3];
+      ctx.beginPath(); ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(side * 120, 10, side * 156, -75, side * 158, -98);
+      ctx.bezierCurveTo(side * 48, -102, side * 12, -45, 0, 0); ctx.fill();
+      ctx.strokeStyle = c.field; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(side * 12, -8); ctx.quadraticCurveTo(side * 83, -44, side * 139, -83); ctx.stroke();
+      ctx.restore();
+    }
+    ctx.fillStyle = c.accent; ctx.beginPath(); ctx.arc(sway, -537, 24, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawWeave(c, rand) {
+    const shift = Math.floor(rand() * 3);
+    ctx.save(); ctx.translate(778, 241);
+    const shades = [c.soft, c.accent, c.light];
+    for (let row = 0; row < 5; row++) {
+      for (let col = 0; col < 4; col++) {
+        const x = col * 88, y = row * 88;
+        ctx.fillStyle = shades[(row + col + shift) % 3];
+        ctx.fillRect(x + 3, y + 3, 78, 78);
+        ctx.strokeStyle = c.field; ctx.lineWidth = 5;
+        ctx.beginPath();
+        for (let line = 16; line < 78; line += 16) {
+          if ((row + col) % 2) { ctx.moveTo(x + line, y + 3); ctx.lineTo(x + line, y + 81); }
+          else { ctx.moveTo(x + 3, y + line); ctx.lineTo(x + 81, y + line); }
+        }
+        ctx.stroke();
+      }
+    }
+    ctx.strokeStyle = c.paper; ctx.lineWidth = 1;
+    ctx.strokeRect(-17, -17, 382, 470); ctx.restore();
+  }
+
+  function drawHorizon(c, rand) {
+    const horizon = 451 + rand() * 40;
+    ctx.save(); ctx.beginPath(); ctx.rect(714, 110, 486, 627); ctx.clip();
+    ctx.fillStyle = c.light; ctx.beginPath(); ctx.arc(956, 321, 119, 0, Math.PI * 2); ctx.fill();
+    [c.soft, c.accent, c.paper].forEach((shade, i) => {
+      const y = horizon + i * 88;
+      ctx.fillStyle = shade; ctx.beginPath(); ctx.moveTo(698, y + 70);
+      ctx.bezierCurveTo(852, y - 133, 974, y + 142, 1217, y - 17);
+      ctx.lineTo(1217, 750); ctx.lineTo(698, 750); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = c.field; ctx.lineWidth = 1.5;
+      for (let n = 1; n <= 3; n++) {
+        ctx.beginPath(); ctx.moveTo(698, y + 70 + n * 15);
+        ctx.bezierCurveTo(852, y - 133 + n * 15, 974, y + 142 + n * 15, 1217, y - 17 + n * 15); ctx.stroke();
+      }
+    });
+    ctx.restore();
+  }
+
+  function drawWindows(c, rand) {
+    const shift = rand() * 22;
+    ctx.save(); ctx.translate(790, 198 + shift);
+    [[0, 100, c.soft], [106, 0, c.light], [212, 164, c.accent]].forEach(([x, y, shade]) => {
+      ctx.fillStyle = shade;
+      ctx.beginPath(); ctx.moveTo(x, y + 340); ctx.lineTo(x, y + 55);
+      ctx.arc(x + 55, y + 55, 55, Math.PI, 0); ctx.lineTo(x + 110, y + 340); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = c.field; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x + 55, y + 16); ctx.lineTo(x + 55, y + 323);
+      for (const offset of [106, 188, 270]) { ctx.moveTo(x + 15, y + offset); ctx.lineTo(x + 95, y + offset); }
+      ctx.stroke();
+    });
+    ctx.strokeStyle = c.paper; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(-22, 527); ctx.lineTo(348, 527); ctx.stroke(); ctx.restore();
+  }
+
+  const motifs = { orbit: drawOrbit, pages: drawPages, path: drawPath, botanical: drawBotanical, weave: drawWeave, horizon: drawHorizon, windows: drawWindows };
+
   function fitLines(text, width) {
     const words = text.split(/\s+/).filter(Boolean);
     for (let size = 74; size >= 32; size -= 2) {
@@ -124,13 +203,13 @@
     const labelTags = tags.value.split(/[,;]+/).map((part) => part.trim()).filter(Boolean).slice(0, 3);
     const hash = labelTags.join("|").split("").reduce((value, letter) => ((value * 31 + letter.charCodeAt(0)) >>> 0), 0);
     const rand = randomFactory(seed ^ hash);
+    // Each recipe must render identically regardless of the previous motif.
+    ctx.lineCap = "butt";
     ctx.clearRect(0, 0, 1200, 900);
     ctx.fillStyle = c.paper; ctx.fillRect(0, 0, 1200, 900);
     ctx.fillStyle = c.field; ctx.fillRect(714, 0, 486, 900);
     drawLines(714, 0, 486, 900, c.paper, palette.value === "sage" ? 0.21 : 0.13);
-    if (motif.value === "pages") drawPages(c, rand);
-    else if (motif.value === "path") drawPath(c, rand);
-    else drawOrbit(c, rand);
+    (motifs[motif.value] || drawOrbit)(c, rand);
 
     ctx.fillStyle = c.accent; ctx.fillRect(70, 75, 35, 5);
     ctx.fillStyle = c.ink; ctx.font = "700 20px Arial, sans-serif";
@@ -167,7 +246,7 @@
     title.value = recipe?.title || selected?.dataset.title || "";
     tags.value = recipe?.tags || "";
     palette.value = colors[recipe?.palette] ? recipe.palette : "forest";
-    motif.value = ["orbit", "pages", "path"].includes(recipe?.motif) ? recipe.motif : "orbit";
+    motif.value = Object.hasOwn(motifs, recipe?.motif) ? recipe.motif : "orbit";
     seed = Number.isSafeInteger(recipe?.seed) && recipe.seed >= 0 ? recipe.seed : 13741;
     draw();
   }

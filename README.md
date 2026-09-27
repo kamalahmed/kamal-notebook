@@ -1,55 +1,50 @@
 # Kamal Notebook
 
-An editorial WordPress theme for articles, tutorials, and linked lesson series. The repository contains the presentation theme in `theme/` and durable features in the companion plugin `plugin/`.
+A personal WordPress journal for code, ideas, and the things worth paying attention to.
 
-## Screenshots
+[Visit the notebook](https://learnwithkamal.com) · [Kamal Ahmed](https://kamalahmed.me)
 
-These local screenshots use clearly marked demonstration articles. The Contact screenshot shows the form after a receiver address was temporarily configured for preview; no receiver address is included in the package.
+![Kamal Notebook homepage](docs/images/home.jpg)
 
-| Home | Article |
+## Made for reading
+
+Warm paper tones, expressive typography, and a quiet editorial layout give short notes and detailed tutorials the same thoughtful home. Articles have a live section outline, highlighted code with a copy button, and illustrated covers that stay readable across screen sizes.
+
+The theme handles presentation. **Notebook Tools**, its companion plugin, adds the writing and reader features:
+
+- **Linked lesson series** with individual URLs, ordered navigation, and browser history support.
+- **Cover Studio** with seven illustration styles, three palettes, and unlimited variations generated in the browser.
+- **An intentional featured story**, chosen by the author.
+- **Native block editing** with article patterns, a live outline, and an editable code block.
+- **Reader tools** for sharing, saving on the current device, and leaving feedback.
+- **A contact form** with validation, duplicate suppression, honeypot protection, and rate limits.
+
+## A closer look
+
+| Article | Lesson series |
 | --- | --- |
-| ![Notebook home with a deliberately featured demonstration article](docs/images/home.jpg) | ![A demonstration article with its illustrated cover and section outline](docs/images/article.jpg) |
+| ![An article with its complete illustrated cover](docs/images/article.jpg) | ![A lesson with ordered course navigation](docs/images/series.jpg) |
 
-| Linked course lesson | About and Contact |
+| About | Contact |
 | --- | --- |
-| ![A demonstration lesson with ordered next-lesson navigation](docs/images/series.jpg) | ![About page](docs/images/about.jpg) ![Contact page with its first-party form](docs/images/contact.jpg) |
+| ![The About page with an index and selected projects](docs/images/about.jpg) | ![The contact page](docs/images/contact.jpg) |
 
-![Notebook Cover studio with a demonstration post](docs/images/cover-studio.jpg)
+![Cover Studio](docs/images/cover-studio.jpg)
 
-## Why the source is in `Downloads/code`
+Screenshots include clearly labeled demonstration articles and lessons.
 
-`~/Downloads/code/kamal-notebook` is only the current development checkout. It is not part of WordPress at runtime. The local WordPress installation links `wp-content/themes/kamal-notebook` to this repository's `theme/` folder and `wp-content/plugins/kamal-notebook-tools` to `plugin/`. The `.git` directory belongs at the repository root so it tracks both parts. You can move the checkout to a permanent folder such as `~/Projects/kamal-notebook`; then update those two local links. The installable ZIPs can be installed on any WordPress site without this folder layout. The retired ProWriter theme is no longer in the local site's themes directory.
+## Use it
 
-## Install and import the demonstration site
+Install and activate **Kamal Notebook** and **Kamal Notebook Tools** from the [latest release](https://github.com/kamalahmed/kamal-notebook/releases/latest). Requires WordPress 6.6+ and PHP 8.0+.
 
-Install and activate **Kamal Notebook** and **Kamal Notebook Tools**. Open **Appearance → Import Notebook demo**, then press **Import demo**. This adds five clearly labeled demonstration posts, an About page and a Contact page if those slugs are free, categories, illustrations, and an explicit featured sample post. It also applies the prototype's home introduction and grid layout on the first import. Running the importer again skips existing demo posts and leaves later settings changes alone.
+Choose **Appearance → Notebook settings** to set the introduction, reading tools, and contact recipient. Under **Posts**, use **Cover Studio** to compose a featured image and **Series** to group lessons. Each lesson’s editor includes its series and lesson number.
 
-The importer preserves existing posts, pages with the same slugs, site title, logo, and media. A fresh site therefore gives the closest match to the prototype. The first import switches the front page to latest posts; previous front page and theme settings are saved in `knt_demo_previous_options` for recovery. Replace demonstration copy before using the site publicly.
+For an example to explore, choose **Appearance → Import Notebook demo**. The importer adds labeled sample articles and a three-part course; repeated imports preserve existing samples and later settings changes. Use a fresh or staging site when trying the complete demo layout.
 
-Build installable ZIPs with `python3 local/package.py`. The ZIPs appear in `dist/`.
+Contact delivery uses the site’s WordPress mail configuration. Saved articles stay in the reader’s browser; they do not sync between devices.
 
-## Featured story, cover image, and next story
+## Built with
 
-In **Posts → Edit Post → Post sidebar**, check **Featured article on the homepage** and save. Exactly one post can be marked at a time. With no marked published post, the homepage shows a neutral illustration and the article list below. The demonstration importer marks its sample lead deliberately; ordinary publishing never chooses a featured article for you.
+WordPress, PHP, native blocks, CSS, JavaScript, Canvas, and Prism syntax highlighting. No frontend framework or external image-generation service is required.
 
-Set the actual image in **Post → Featured image**. If a post has no image, the theme uses one of five bundled SVG illustrations for its card and article hero. The original repeated green graphic is `feature.svg`; it now remains only for the empty homepage lead. **Posts → Cover studio** creates a new 1200 × 900 PNG using the theme palette. Enter a cover title and up to three design tags, choose a palette and illustration, preview variations, then save the one you want. Saving puts it in the Media Library and sets it as that post's Featured image. The original recipe is stored with the attachment. This graphic generator runs in the browser with no API cost or monthly limit; it creates designed covers rather than AI photographs.
-
-The **Read the next story** section chooses the newest *older* published post in the same category. If there is none, it chooses the newest older post overall. At the oldest post it disappears, so two posts do not point back and forth. Course lessons use their own ordered navigation instead.
-
-## Write with a live outline and highlighted code
-
-Open **Posts → Add New** and choose **Guided article** or **Quick note**. Use Heading 2 blocks for sections. The theme builds linked headings on the article page. In the editor's **Post** sidebar, choose **Preview table of contents** to open and scroll to the live outline; it updates as you edit. WordPress can remember that panel as collapsed, and a pattern picker or editing-lock dialog can cover the editor until dismissed. The preview uses the article's colors and section styling; the front end adds working anchor links and scroll tracking.
-
-Insert the **Highlighted code example** pattern for an editable **Notebook Code** block. Syntax highlighting is included for JavaScript, CSS, HTML, JSON, PHP, Bash, and Python; plain text is also supported. Choose the language and filename in the block controls. The dark green code surface follows the theme palette, with distinct language colors and a copy button on the site. WordPress's ordinary Code block does not receive Notebook highlighting.
-
-## Courses and lesson series
-
-Create one WordPress post per lesson. Under **Posts → Series**, create a course name. Edit each lesson and choose that series in the **Course / series lesson** editor box, then set its lesson number. Published lessons appear in number order with **Previous lesson** and **Next lesson** links. Each keeps its own direct URL, search visibility, editing history, and shareable bookmark. Clicking between supported lessons swaps the article content without a full page refresh; browser Back works. If a lesson contains a legacy script, iframe, or form, its link uses a normal page load so that interaction stays reliable.
-
-Use **Visual walkthrough**, Image, Gallery, Media & Text, and Notebook Code blocks inside each lesson. The **Tutorial with lessons** pattern still works for a shorter tutorial kept in one post, using Heading 2 sections as its internal outline. For a long course or one that needs independent lesson URLs, use the linked Series controls. The existing drag-and-drop tutorial is legacy HTML and stays isolated in a frame; it can be rewritten as separate block-based lesson posts when you are ready, without altering the original automatically.
-
-## About, Contact, and settings
-
-The `about` and `contact` page slugs use matching editorial page templates. Existing page text stays editable in WordPress. The About page does not invent a biography. The local Contact page's old Contact Form 7 shortcode was replaced with a short introduction so it uses the new form.
-
-Under **Appearance → Notebook settings → Contact page**, add one or more receiver email addresses separated by commas. The form appears after a receiver is configured. It uses WordPress mail, a nonce, a hidden honeypot field, input validation, duplicate suppression, and per-address/IP rate limits; no form plugin or external CAPTCHA service is required. Mail delivery still depends on the hosting site's WordPress mail configuration, and these measures cannot guarantee zero spam. The theme settings page also points to the post editor controls for the featured story, Featured image, outline, code, and series.
+Created by [Kamal Ahmed](https://kamalahmed.me).

@@ -3,7 +3,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KN_VERSION = '1.2.0';
+const KN_VERSION = '1.3.0';
 
 function kn_setup(): void {
 	add_theme_support( 'title-tag' );
@@ -209,6 +209,8 @@ function kn_story_excerpt( int $post_id, int $words = 28 ): string {
 
 function kn_post_image( int $post_id, string $size = 'kn-card', bool $eager = false ): string {
 	if ( has_post_thumbnail( $post_id ) ) {
+		// Article covers can contain type: use the original proportions, including older uploads.
+		$size = 'kn-feature' === $size ? 'full' : $size;
 		return get_the_post_thumbnail( $post_id, $size, array( 'loading' => $eager ? 'eager' : 'lazy', 'decoding' => 'async', 'fetchpriority' => $eager ? 'high' : 'auto' ) );
 	}
 	$art = array( 'art-programming.svg', 'art-ai.svg', 'art-tech.svg', 'art-journal.svg', 'art-questions.svg' );

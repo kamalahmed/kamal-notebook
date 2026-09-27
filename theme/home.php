@@ -8,25 +8,43 @@ if ( is_category() ) {
 	$topic = sanitize_title( wp_unslash( $_GET['topic'] ) );
 }
 
+$series_term = is_tax( 'knt_series' ) && function_exists( 'knt_series_lessons' ) ? get_queried_object() : null;
 $search      = get_search_query();
 $paged       = max( 1, (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) );
-$filtered    = '' !== $topic || '' !== $search;
+$filtered    = $series_term || '' !== $topic || '' !== $search;
 $lead        = $filtered || $paged > 1 || ! function_exists( 'knt_featured_post' ) ? null : knt_featured_post();
 $archive_url = kn_archive_url();
 $categories  = get_categories( array( 'hide_empty' => true ) );
-$stories     = new WP_Query( array(
+// Match the main taxonomy query so valid course pages are never treated as 404s.
+$per_page = $series_term ? max( 1, (int) get_query_var( 'posts_per_page', get_option( 'posts_per_page' ) ) ) : 9;
+$story_query = array(
 	'post_type'           => 'post',
 	'post_status'         => 'publish',
-	'posts_per_page'      => 9,
+	'posts_per_page'      => $per_page,
 	'paged'               => $paged,
 	'category_name'       => $topic,
 	's'                   => $search,
 	'post__not_in'        => $lead ? array( $lead->ID ) : array(),
 	'ignore_sticky_posts' => true,
-) );
+);
+if ( $series_term ) {
+	$story_query['post__in'] = array_column( knt_series_lessons( $series_term->term_id ), 'ID' ) ?: array( 0 );
+	$story_query['orderby'] = 'post__in';
+	$story_query['category_name'] = '';
+	$story_query['s'] = '';
+}
+$stories = new WP_Query( $story_query );
 
 get_header();
 ?>
+<?php if ( $series_term ) : ?>
+<section class="container series-intro" aria-labelledby="intro-title">
+	<div class="eyebrow"><?php esc_html_e( 'A COURSE IN THE NOTEBOOK', 'kamal-notebook' ); ?></div>
+	<h1 id="intro-title"><?php echo esc_html( $series_term->name ); ?></h1>
+	<?php if ( $series_term->description ) : ?><p class="intro-deck"><?php echo esc_html( $series_term->description ); ?></p><?php endif; ?>
+	<a class="text-link" href="#stories"><?php esc_html_e( 'Explore the lessons', 'kamal-notebook' ); ?> <span aria-hidden="true">↘</span></a>
+</section>
+<?php else : ?>
 <section class="intro container" aria-labelledby="intro-title">
 	<div class="intro-copy">
 		<div class="eyebrow">
@@ -88,11 +106,18 @@ get_header();
 	</div>
 </div>
 
+<?php endif; ?>
 <section id="stories" class="stories-section container" aria-labelledby="stories-title">
 	<div class="section-heading">
+		<?php if ( $series_term ) : ?>
+		<div><div class="eyebrow section-eyebrow"><?php esc_html_e( 'STEP BY STEP', 'kamal-notebook' ); ?></div><h2 id="stories-title"><?php esc_html_e( 'The lessons', 'kamal-notebook' ); ?></h2></div>
+		<p><?php esc_html_e( 'Start at the beginning or return to a lesson. Each one has its own place in the course.', 'kamal-notebook' ); ?></p>
+		<?php else : ?>
 		<div><div class="eyebrow section-eyebrow">01 / THE ARCHIVE</div><h2 id="stories-title">From the <em>notebook</em></h2></div>
 		<p><?php esc_html_e( 'Some pieces are practical, some are personal. All begin with a question.', 'kamal-notebook' ); ?></p>
+		<?php endif; ?>
 	</div>
+	<?php if ( ! $series_term ) : ?>
 	<div class="explore-bar">
 		<nav class="topic-tabs" aria-label="<?php esc_attr_e( 'Filter by topic', 'kamal-notebook' ); ?>">
 			<a class="topic-tab <?php echo $topic ? '' : 'is-active'; ?>" href="<?php echo esc_url( $archive_url . '#stories' ); ?>" <?php echo $topic ? '' : 'aria-current="page"'; ?>>
@@ -112,17 +137,18 @@ get_header();
 		</form>
 	</div>
 
+	<?php endif; ?>
 	<p class="result-count">
-		<?php printf( esc_html( _n( '%s story', '%s stories', $stories->found_posts, 'kamal-notebook' ) ), esc_html( number_format_i18n( $stories->found_posts ) ) ); ?>
+		<?php printf( esc_html( $series_term ? _n( '%s lesson', '%s lessons', $stories->found_posts, 'kamal-notebook' ) : _n( '%s story', '%s stories', $stories->found_posts, 'kamal-notebook' ) ), esc_html( number_format_i18n( $stories->found_posts ) ) ); ?>
 	</p>
 	<div class="story-grid" id="story-grid">
 		<?php while ( $stories->have_posts() ) : $stories->the_post(); $post_id = get_the_ID(); ?>
 			<article class="story-card">
-				<span class="row-number" aria-hidden="true"><?php echo esc_html( sprintf( '%02d', $stories->current_post + 1 + ( $paged - 1 ) * 9 ) ); ?></span>
+				<span class="row-number" aria-hidden="true"><?php echo esc_html( sprintf( '%02d', $stories->current_post + 1 + ( $paged - 1 ) * $per_page ) ); ?></span>
 				<a class="story-visual" href="<?php echo esc_url( get_permalink() ); ?>" tabindex="-1" aria-hidden="true"><?php echo kn_post_image( $post_id ); ?></a>
 				<div class="story-body">
 					<div class="story-meta">
-						<span><?php echo esc_html( kn_post_topic( $post_id ) ); ?></span>
+						<span><?php echo esc_html( $series_term ? sprintf( __( 'Lesson %d', 'kamal-notebook' ), $stories->current_post + 1 + ( $paged - 1 ) * $per_page ) : kn_post_topic( $post_id ) ); ?></span>
 						<span><?php echo esc_html( kn_reading_minutes( $post_id ) ); ?> <?php esc_html_e( 'min read', 'kamal-notebook' ); ?></span>
 					</div>
 					<h3><a href="<?php echo esc_url( get_permalink() ); ?>"><?php echo esc_html( get_the_title() ); ?> <span aria-hidden="true">↗</span></a></h3>

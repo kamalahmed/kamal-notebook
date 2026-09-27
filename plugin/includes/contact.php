@@ -53,6 +53,19 @@ function knt_contact_page_is_valid( int $page_id ): bool {
 	return 'page-contact.php' === get_page_template_slug( $page_id ) || 'contact' === get_post_field( 'post_name', $page_id );
 }
 
+/** Keep page caches from serving an expired contact-form nonce. */
+function knt_contact_disable_page_cache(): void {
+	if ( ! is_page() || ! knt_contact_page_is_valid( get_queried_object_id() ) ) {
+		return;
+	}
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
+	nocache_headers();
+	do_action( 'litespeed_control_set_nocache', 'Notebook contact form requires a fresh nonce.' );
+}
+add_action( 'template_redirect', 'knt_contact_disable_page_cache', 0 );
+
 function knt_handle_contact_submission(): void {
 	if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
 		wp_die( esc_html__( 'This request is unavailable.', 'kamal-notebook-tools' ), '', array( 'response' => 405 ) );
@@ -83,7 +96,8 @@ function knt_handle_contact_submission(): void {
 	}
 	$name = trim( sanitize_text_field( $raw_name ) );
 	$email = trim( $raw_email );
-	$message = trim( sanitize_textarea_field( $raw_message ) );
+	// Browsers submit CRLF; normalize API retries to the same duplicate identity.
+	$message = trim( sanitize_textarea_field( str_replace( array( "\r\n", "\r" ), "\n", $raw_message ) ) );
 	$name_length = function_exists( 'mb_strlen' ) ? mb_strlen( $name, 'UTF-8' ) : strlen( $name );
 	$message_length = function_exists( 'mb_strlen' ) ? mb_strlen( $message, 'UTF-8' ) : strlen( $message );
 	if ( '' === $name || $name_length > 100 || '' === $message || $message_length > 5000 || strlen( $email ) > 254 || ! is_email( $email ) ) {

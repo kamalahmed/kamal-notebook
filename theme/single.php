@@ -60,7 +60,6 @@ while ( have_posts() ) :
 			</div>
 			<div class="article-hero-art">
 				<?php echo kn_post_image( $post_id, 'kn-feature', true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Helper returns escaped theme markup. ?>
-				<span class="art-vertical"><?php esc_html_e( 'THE NOTEBOOK', 'kamal-notebook' ); ?></span>
 			</div>
 		</header>
 

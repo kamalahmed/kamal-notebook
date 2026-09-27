@@ -892,15 +892,16 @@ p {
 }
 .article-hero-art {
   position: relative;
-  align-self: end;
+  align-self: center;
   overflow: hidden;
-  aspect-ratio: 0.79;
+  aspect-ratio: auto;
   background: var(--ink);
 }
 .article-hero-art img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
 }
 .art-vertical {
   position: absolute;
@@ -1543,9 +1544,6 @@ p {
   .article-standfirst {
     font-size: 19px;
   }
-  .article-hero-art {
-    aspect-ratio: 1.4;
-  }
   .article-divider {
     padding-bottom: 48px;
   }
@@ -1853,9 +1851,10 @@ p {
   overflow-wrap: anywhere;
 }
 .article-hero-art img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
 }
 .article-byline .avatar-mark {
   text-transform: lowercase;
@@ -2477,4 +2476,20 @@ p {
 }
 .next-read h2 {
   overflow-wrap: anywhere;
+}
+
+/* A series archive introduces one ordered course. */
+.series-intro {
+  padding-block: clamp(48px, 7vw, 96px);
+}
+.series-intro h1 {
+  max-width: 1000px;
+  margin: 24px 0;
+  font: 500 clamp(42px, 6vw, 80px)/1.08 var(--serif);
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+.series-intro .intro-deck {
+  max-width: 680px;
+  margin-bottom: 28px;
 }

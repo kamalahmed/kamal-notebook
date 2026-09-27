@@ -96,6 +96,28 @@
   font-size: clamp(17px, 1.55vw, 21px);
 }
 
+.kn-about-index {
+  display: grid;
+  gap: 14px;
+  max-width: 250px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  font: 500 13px/1.5 var(--sans);
+}
+
+.kn-about-index a:hover {
+  color: var(--accent-dark);
+}
+
+.kn-about-page .wp-block-list li {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.kn-about-page .wp-block-list {
+  padding-left: 22px;
+}
+
 .kn-page-content > p:first-child,
 .kn-page-content .article-content > p:first-child {
   font: 400 clamp(26px, 2.7vw, 37px) / 1.4 var(--serif);
@@ -269,6 +291,12 @@
 
   .kn-aside-glyph {
     display: none;
+  }
+
+  .kn-about-index {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: none;
+    margin-top: 22px;
   }
 }
 

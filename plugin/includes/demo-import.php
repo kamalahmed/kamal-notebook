@@ -80,6 +80,94 @@ function knt_demo_posts(): array {
 	);
 }
 
+/** Three editable lessons for trying a course without changing site settings. */
+function knt_demo_series_posts(): array {
+	$lessons = array(
+		array(
+			'key' => 'course-observe', 'title' => 'Demonstration: 1. Start with an observation', 'art' => 'art-journal.svg',
+			'excerpt' => 'Turn a vague idea into a concrete question. The first of three sample lessons.',
+			'opening' => 'This demonstration course follows one small exercise: making a useful reading list. Each lesson is a separate post with its own address. Use the lesson navigation below to continue.',
+			'sections' => array(
+				'Choose something small' => 'Imagine you have collected five articles and keep forgetting which one to read next. Begin with that specific situation instead of planning an entire knowledge system.',
+				'Write the question' => 'Ask: which unread article can I finish in ten minutes? The question tells us which details the list needs: a title, a reading time, and whether the article has been read.',
+				'Try it yourself' => 'Write down three articles you want to read. Give each a rough reading time. In the next lesson, we will represent one article as a small JavaScript object.',
+			),
+		),
+		array(
+			'key' => 'course-model', 'title' => 'Demonstration: 2. Make the idea concrete', 'art' => 'art-programming.svg',
+			'excerpt' => 'Represent the reading list with a small JavaScript example you can inspect and copy.',
+			'opening' => 'This is lesson two of the demonstration course. We are turning a reading-list question into data. The sample below runs in a browser console and does not need an account or a service.',
+			'sections' => array(
+				'Keep only the useful details' => 'An object groups the details of one article. A list of objects lets us ask the same question about every article. We use minutes as a number and read as a boolean so the conditions stay explicit.',
+				'Filter the reading list' => 'The filter keeps articles that are unread and take ten minutes or less. Copy the example, run it in your browser console, and inspect the returned list. Only “A useful question” should remain.',
+			),
+			'code' => "const articles = [\n  { title: 'A useful question', minutes: 8, read: false },\n  { title: 'A longer exploration', minutes: 18, read: false },\n  { title: 'A familiar idea', minutes: 5, read: true },\n];\n\nconst nextReads = articles.filter(article =>\n  !article.read && article.minutes <= 10\n);\nconsole.log(nextReads);",
+		),
+		array(
+			'key' => 'course-reflect', 'title' => 'Demonstration: 3. Test, notice, revise', 'art' => 'art-questions.svg',
+			'excerpt' => 'Check the boundary cases, explain what changed, and choose the next small experiment.',
+			'opening' => 'This final demonstration lesson closes the reading-list exercise. A useful experiment ends with a checkable observation and a next step, even when the result is small.',
+			'sections' => array(
+				'Check the edges' => 'Change the first article to exactly ten minutes: it should still appear. Set read to true: it should disappear. Make every article longer than ten minutes: the result should be an empty list.',
+				'Read the result' => 'An empty list is a valid result. It means no article matches the question. A reading interface could explain that plainly and offer a longer time limit, rather than showing a blank space.',
+				'Choose the next question' => 'Would you rather sort the matches by time or choose one at random? Pick one change and explain how you would know it works. Return to the previous lesson to try your variation.',
+			),
+		),
+	);
+	foreach ( $lessons as &$lesson ) {
+		$lesson['content'] = knt_demo_article( $lesson['opening'], $lesson['sections'] );
+		if ( isset( $lesson['code'] ) ) {
+			$lesson['content'] .= '<!-- wp:kamal-notebook/code ' . wp_json_encode( array( 'language' => 'javascript', 'filename' => 'reading-list.js', 'code' => $lesson['code'] ) ) . ' /-->';
+		}
+	}
+	unset( $lesson );
+	// Editable blocks make a small decision diagram, with no external image dependency.
+	$lessons[0]['content'] .= '<!-- wp:heading --><h2 class="wp-block-heading">The shape of the exercise</h2><!-- /wp:heading --><!-- wp:table --><figure class="wp-block-table"><table><thead><tr><th>Observe</th><th>Make</th><th>Check</th></tr></thead><tbody><tr><td>Too many saved articles</td><td>A list with reading times</td><td>Unread and ten minutes or less</td></tr></tbody></table><figcaption class="wp-element-caption">One question carried through three lessons.</figcaption></figure><!-- /wp:table -->';
+	return $lessons;
+}
+
+function knt_import_demo_series(): array {
+	$result = array( 'created' => 0, 'skipped' => 0, 'ids' => array() );
+	$term = term_exists( 'demonstration-small-learning-project', KNT_SERIES_TAXONOMY );
+	if ( ! $term ) {
+		$term = wp_insert_term( 'Demonstration: A small learning project', KNT_SERIES_TAXONOMY, array(
+			'slug' => 'demonstration-small-learning-project',
+			'description' => 'Three demonstration lessons: observe a small problem, make an example, and check the result. Each lesson is an editable post.',
+		) );
+	}
+	if ( is_wp_error( $term ) ) {
+		return array_merge( $result, array( 'error' => $term->get_error_message() ) );
+	}
+	$term_id = (int) ( is_array( $term ) ? $term['term_id'] : $term );
+	foreach ( knt_demo_series_posts() as $index => $lesson ) {
+		$existing = knt_demo_imported_id( $lesson['key'] );
+		if ( $existing ) {
+			$result['ids'][] = $existing;
+			++$result['skipped'];
+			continue;
+		}
+		$post_id = wp_insert_post( array(
+			'post_type' => 'post', 'post_status' => 'publish',
+			'post_title' => $lesson['title'], 'post_name' => 'demonstration-' . $lesson['key'],
+			'post_excerpt' => $lesson['excerpt'], 'post_content' => $lesson['content'],
+			'meta_input' => array( '_knt_demo_key' => $lesson['key'], '_kn_demo_art' => $lesson['art'], KNT_SERIES_ORDER_META => $index + 1 ),
+		), true );
+		if ( is_wp_error( $post_id ) ) {
+			return array_merge( $result, array( 'error' => $post_id->get_error_message() ) );
+		}
+		$assigned = wp_set_object_terms( $post_id, array( $term_id ), KNT_SERIES_TAXONOMY );
+		if ( is_wp_error( $assigned ) ) {
+			// Remove only the post just created so a later import can retry cleanly.
+			wp_delete_post( $post_id, true );
+			return array_merge( $result, array( 'error' => $assigned->get_error_message() ) );
+		}
+		$result['ids'][] = $post_id;
+		++$result['created'];
+	}
+	$result['series_id'] = $term_id;
+	return $result;
+}
+
 function knt_demo_imported_id( string $key ): int {
 	$posts = get_posts( array(
 		'post_type' => 'post',
@@ -147,6 +235,12 @@ function knt_import_demo(): array {
 		}
 		++$created;
 	}
+	$series = knt_import_demo_series();
+	$created += $series['created'];
+	$skipped += $series['skipped'];
+	if ( isset( $series['error'] ) ) {
+		return array( 'created' => $created, 'skipped' => $skipped, 'error' => $series['error'] );
+	}
 	if ( ! get_option( 'knt_demo_setup_applied' ) ) {
 		update_option( 'knt_demo_previous_options', array(
 			'kn_settings' => get_option( 'kn_settings', false ),
@@ -184,7 +278,7 @@ function knt_demo_page(): void {
 		<?php if ( isset( $_GET['knt_error'] ) ) : ?>
 			<div class="notice notice-error"><p><?php echo esc_html( sanitize_text_field( wp_unslash( $_GET['knt_error'] ) ) ); ?></p></div>
 		<?php endif; ?>
-		<p><?php esc_html_e( 'This adds five clearly labeled demonstration posts with editable blocks, category tabs, the original home introduction, and the illustrated grid. If no article is featured yet, one demo post is marked deliberately; you can change that in any post editor.', 'kamal-notebook-tools' ); ?></p>
+		<p><?php esc_html_e( 'This adds five clearly labeled demonstration stories and a three-lesson demonstration course with editable blocks, category tabs, the original home introduction, and the illustrated grid. If no article is featured yet, one demo post is marked deliberately; you can change that in any post editor.', 'kamal-notebook-tools' ); ?></p>
 		<p><?php esc_html_e( 'The first import also sets the homepage to latest posts and resets Notebook settings to the prototype defaults. Later imports leave your settings alone. Your site name, logo, existing posts, and media stay as they are. The closest match is an otherwise empty WordPress site.', 'kamal-notebook-tools' ); ?></p>
 		<?php if ( $published ) : ?>
 			<p><strong><?php echo esc_html( sprintf( _n( 'This site already has %d published post. Demo posts will appear alongside it.', 'This site already has %d published posts. Demo posts will appear alongside them.', $published, 'kamal-notebook-tools' ), $published ) ); ?></strong></p>

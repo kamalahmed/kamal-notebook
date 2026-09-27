@@ -9,6 +9,7 @@ get_header();
 while ( have_posts() ) :
 	the_post();
 	$intro = has_excerpt() ? get_the_excerpt() : kn_option( 'about_heading' );
+	list( $biography, $sections ) = kn_prepare_article( apply_filters( 'the_content', get_the_content() ) );
 	?>
 	<article <?php post_class( 'kn-editorial-page kn-about-page' ); ?>>
 		<header class="kn-page-hero container">
@@ -23,10 +24,17 @@ while ( have_posts() ) :
 			<aside class="kn-page-aside" aria-label="<?php esc_attr_e( 'Page context', 'kamal-notebook' ); ?>">
 				<span class="eyebrow">01 / <?php esc_html_e( 'This space', 'kamal-notebook' ); ?></span>
 				<span class="kn-aside-glyph" aria-hidden="true">k.</span>
+				<?php if ( $sections ) : ?>
+					<nav class="kn-about-index" aria-label="<?php esc_attr_e( 'About page sections', 'kamal-notebook' ); ?>">
+						<?php foreach ( $sections as $section ) : ?>
+							<a href="#<?php echo esc_attr( $section['id'] ); ?>"><?php echo esc_html( $section['title'] ); ?></a>
+						<?php endforeach; ?>
+					</nav>
+				<?php endif; ?>
 			</aside>
 			<div class="kn-page-content article-content">
 				<?php if ( trim( get_the_content() ) ) : ?>
-					<?php the_content(); ?>
+					<?php echo $biography; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress-rendered block content. ?>
 				<?php elseif ( kn_option( 'about_text' ) ) : ?>
 					<p><?php echo esc_html( kn_option( 'about_text' ) ); ?></p>
 				<?php endif; ?>
