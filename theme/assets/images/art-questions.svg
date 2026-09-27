@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" role="img" aria-label="Abstract measuring marks and circles">
+  <rect width="640" height="470" fill="#e9c88a"/>
+  <path d="M0 68h640M0 135h640M0 202h640M0 269h640M0 336h640M0 403h640" stroke="#b89262" stroke-opacity=".5"/>
+  <circle cx="308" cy="230" r="143" fill="#f6edda" stroke="#1b4036" stroke-width="3"/><circle cx="308" cy="230" r="92" fill="none" stroke="#1b4036" stroke-width="2" stroke-dasharray="5 9"/>
+  <path d="M205 230h206M308 126v208" stroke="#1b4036" stroke-width="3"/><circle cx="308" cy="230" r="34" fill="#e66945" stroke="#1b4036" stroke-width="3"/>
+  <path d="m130 64 30 31m342 244 31 31M140 360l25-28" stroke="#1b4036" stroke-width="3"/>
+  <rect x="40" y="40" width="102" height="37" fill="#1b4036"/><text x="54" y="64" fill="#f6edda" font-family="monospace" font-size="12" letter-spacing="2">USEFUL?</text>
+  <text x="30" y="441" fill="#1b4036" font-family="monospace" font-size="15" letter-spacing="3">THE THINGS THAT LAST</text>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" role="img" aria-label="Abstract journal pages">
+  <rect width="640" height="470" fill="#d7d1c0"/><circle cx="513" cy="75" r="125" fill="#e9bc83"/>
+  <path d="m165 28 365 36-35 362-365-36Z" fill="#f4ecda" stroke="#3d5545" stroke-width="3"/><path d="M158 103 522 139M151 176l364 36M144 249l364 36M137 322l364 36" stroke="#b7b3a3" stroke-width="2"/><path d="m215 124 100 10m-106 63 220 22m-227 51 163 16m-170 56 245 22" stroke="#26493c" stroke-width="8" stroke-linecap="round"/><path d="M412 304c-53-27-90 32-66 55 28 26 69-3 66-55Z" fill="#f16b45"/>
+  <text x="30" y="444" fill="#21463a" font-family="monospace" font-size="15" letter-spacing="3">LIFE / BETWEEN THE LINES</text>
+</svg>

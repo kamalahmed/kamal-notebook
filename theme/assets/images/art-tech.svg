@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" role="img" aria-label="Abstract interconnected devices">
+  <rect width="640" height="470" fill="#284a41"/><g fill="none" stroke="#d7e5c9" stroke-opacity=".23"><circle cx="319" cy="235" r="180"/><circle cx="319" cy="235" r="129"/><circle cx="319" cy="235" r="78"/><path d="M0 235h640M319 0v470"/></g>
+  <rect x="210" y="120" width="218" height="235" rx="8" fill="#f3e9d4" stroke="#162e2b" stroke-width="4"/><rect x="231" y="146" width="176" height="150" fill="#d4e1b8"/><path d="M255 271 304 215l43 31 39-67" fill="none" stroke="#e46c48" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="319" cy="325" r="10" fill="#e46c48"/>
+  <g fill="#ec754f"><circle cx="87" cy="235" r="17"/><circle cx="543" cy="104" r="12"/><circle cx="553" cy="345" r="18"/></g><path d="M87 235h90M428 167l104-58M428 309l111 31" fill="none" stroke="#d7e5c9" stroke-width="3" stroke-dasharray="6 8"/>
+  <text x="30" y="440" fill="#f3e9d4" font-family="monospace" font-size="15" letter-spacing="3">TOOLS IN REAL LIFE</text>
+</svg>

@@ -1,0 +1,103 @@
+@font-face {
+  font-family: Fraunces;
+  src: url("../fonts/fraunces.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DM Sans";
+  src: url("../fonts/dm-sans.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("../fonts/plex-mono.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+.editor-styles-wrapper {
+  background: #f6f2e9;
+  color: #173a31;
+  font-family: "DM Sans", sans-serif;
+}
+.editor-styles-wrapper .wp-block-post-content,
+.editor-styles-wrapper .is-root-container {
+  max-width: 720px;
+  margin-inline: auto;
+}
+.editor-styles-wrapper p {
+  font-size: 18px;
+  line-height: 1.85;
+}
+.editor-styles-wrapper h2 {
+  margin-top: 65px;
+  margin-bottom: 22px;
+  font:
+    500 48px/1.08 Fraunces,
+    Georgia,
+    serif;
+  letter-spacing: -0.05em;
+}
+.editor-styles-wrapper h3 {
+  font:
+    500 31px/1.12 Fraunces,
+    Georgia,
+    serif;
+}
+.editor-styles-wrapper .kn-draft-prompt {
+  color: #765c4c;
+}
+.editor-styles-wrapper .kn-takeaways {
+  padding: 28px 34px;
+  border: 1px solid #c0c9b4;
+  background: #e8ecdb;
+}
+.editor-styles-wrapper .kn-takeaways h3 {
+  margin: 0 0 15px;
+  font-size: 31px;
+}
+.editor-styles-wrapper .kn-key-concepts {
+  padding: 22px;
+  border-top: 3px solid #173a31;
+  background: #eae6d9;
+}
+.editor-styles-wrapper .kn-key-concepts h3 {
+  margin: 0 0 14px;
+  color: #a83e23;
+  font:
+    500 11px "IBM Plex Mono",
+    monospace;
+  text-transform: uppercase;
+}
+.editor-styles-wrapper .kn-key-concepts p {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+.editor-styles-wrapper .kn-field-note {
+  padding: 27px 33px;
+  border-left: 4px solid #e45e3a;
+  background: #edddd0;
+}
+.editor-styles-wrapper .kn-field-note p {
+  font:
+    italic 28px/1.35 Fraunces,
+    Georgia,
+    serif;
+}
+.editor-styles-wrapper .kn-try-it {
+  padding: 24px 0;
+  border-block: 1px solid #c9cbbd;
+}
+.editor-styles-wrapper .kn-takeaways h2 {
+  margin: 0 0 15px;
+  font-size: 31px;
+}
+.editor-styles-wrapper .kn-key-concepts h2 {
+  margin: 0 0 14px;
+  color: #a83e23;
+  font:
+    500 11px "IBM Plex Mono",
+    monospace;
+  text-transform: uppercase;
+}

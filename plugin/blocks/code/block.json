@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "kamal-notebook/code",
+  "title": "Notebook Code",
+  "category": "text",
+  "icon": "editor-code",
+  "description": "A highlighted code example with a filename and copy button.",
+  "keywords": ["code", "syntax", "programming"],
+  "textdomain": "kamal-notebook-tools",
+  "attributes": {
+    "language": { "type": "string", "default": "javascript" },
+    "filename": { "type": "string", "default": "example.js" },
+    "code": { "type": "string", "default": "" }
+  },
+  "supports": { "html": false, "reusable": true },
+  "editorScript": "knt-code-editor",
+  "editorStyle": "knt-code-editor"
+}

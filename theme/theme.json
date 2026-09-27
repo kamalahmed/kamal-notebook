@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "color": {
+      "palette": [
+        { "slug": "paper", "name": "Paper", "color": "#f6f2e9" },
+        { "slug": "forest", "name": "Forest", "color": "#173a31" },
+        { "slug": "persimmon", "name": "Persimmon", "color": "#e45e3a" },
+        { "slug": "sage", "name": "Sage", "color": "#e8ecdb" },
+        { "slug": "butter", "name": "Butter", "color": "#f4d793" }
+      ],
+      "defaultPalette": false
+    },
+    "layout": { "contentSize": "720px", "wideSize": "1220px" },
+    "spacing": { "units": ["px", "em", "rem", "%", "vw"] },
+    "typography": {
+      "fluid": true,
+      "fontFamilies": [
+        { "slug": "sans", "name": "DM Sans", "fontFamily": "'DM Sans', sans-serif" },
+        { "slug": "serif", "name": "Fraunces", "fontFamily": "Fraunces, Georgia, serif" },
+        { "slug": "mono", "name": "IBM Plex Mono", "fontFamily": "'IBM Plex Mono', monospace" }
+      ]
+    }
+  },
+  "styles": {
+    "color": { "background": "#f6f2e9", "text": "#173a31" },
+    "typography": { "fontFamily": "'DM Sans', sans-serif", "fontSize": "18px", "lineHeight": "1.7" },
+    "elements": {
+      "link": { "color": { "text": "#173a31" } },
+      "heading": { "typography": { "fontFamily": "Fraunces, Georgia, serif", "fontWeight": "500", "lineHeight": "1.12" } }
+    }
+  }
+}

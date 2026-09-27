@@ -1,0 +1,83 @@
+.knt-editor-block {
+  border: 1px solid #173a31;
+  background: #1b302c;
+  color: #f4eee0;
+}
+.knt-editor-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px;
+  gap: 15px;
+  align-items: end;
+  padding: 16px 18px 4px;
+}
+.knt-editor-toolbar .components-base-control__label,
+.knt-editor-label {
+  color: #e6eadb !important;
+  font:
+    11px "IBM Plex Mono",
+    monospace;
+}
+.knt-editor-toolbar input,
+.knt-editor-toolbar select {
+  background: #f6f2e9;
+  color: #173a31;
+}
+.knt-editor-label {
+  display: block;
+  padding: 0 18px 8px;
+}
+.knt-editor-block textarea {
+  display: block;
+  width: 100%;
+  min-height: 240px;
+  padding: 20px;
+  border: 0;
+  background: #1b302c;
+  color: #f4eee0;
+  font:
+    14px/1.65 "IBM Plex Mono",
+    monospace;
+}
+.knt-editor-block .CodeMirror {
+  height: auto;
+  min-height: 240px;
+  background: #1b302c;
+  color: #f4eee0;
+  font:
+    14px/1.65 "IBM Plex Mono",
+    monospace;
+}
+.knt-editor-block .CodeMirror-gutters {
+  background: #233b35;
+  border-right: 1px solid #496057;
+}
+.knt-editor-block .CodeMirror-linenumber {
+  color: #a8baab;
+}
+.knt-editor-block .CodeMirror-cursor {
+  border-color: #f4eee0;
+}
+.knt-editor-block .cm-keyword {
+  color: #e9ab83;
+}
+.knt-editor-block .cm-string {
+  color: #e7cf89;
+}
+.knt-editor-block .cm-comment {
+  color: #9daf9e;
+}
+.knt-editor-block .cm-number {
+  color: #c5b9e9;
+}
+@media (max-width: 600px) {
+  .knt-editor-toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+.knt-editor-block .CodeMirror-selected {
+  background: #355347 !important;
+}
+.knt-editor-block .CodeMirror-activeline-background {
+  background: #29433b;
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" role="img" aria-label="Abstract layered windows">
+  <rect width="640" height="470" fill="#e7a37d"/><path d="M0 380c143-49 222-30 345-118 116-82 230-81 295-75v283H0Z" fill="#e06e4d"/>
+  <g fill="#f9efdb" stroke="#203f35" stroke-width="3"><rect x="141" y="66" width="290" height="267" rx="4" transform="rotate(-9 141 66)"/><rect x="203" y="83" width="290" height="267" rx="4" transform="rotate(5 203 83)"/></g>
+  <path d="M235 138h204M235 177h120M235 216h168M235 255h91" stroke="#22483d" stroke-width="8" stroke-linecap="round"/><circle cx="404" cy="285" r="35" fill="#f06b45" stroke="#22483d" stroke-width="3"/><path d="m389 285 11 11 21-24" fill="none" stroke="#fff8e9" stroke-width="5"/>
+  <text x="30" y="435" fill="#183d34" font-family="monospace" font-size="15" letter-spacing="3">BUILD / OBSERVE / REPEAT</text>
+</svg>

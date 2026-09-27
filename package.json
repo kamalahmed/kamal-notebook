@@ -1,0 +1,15 @@
+{
+  "name": "kamal-notebook",
+  "private": true,
+  "scripts": {
+    "build:code": "esbuild plugin/assets/code-view.src.js --bundle --minify --format=iife --outfile=plugin/assets/code-view.js",
+    "format": "prettier --write theme/assets/css/*.css theme/assets/js/*.js plugin/assets/*.js plugin/assets/*.css",
+    "check": "node --check theme/assets/js/site.js && node --check theme/assets/js/reader.js && node --check plugin/assets/code-editor.js && node --check plugin/assets/feedback.js"
+  },
+  "devDependencies": {
+    "codemirror": "^5.65.20",
+    "esbuild": "0.25.12",
+    "prettier": "3.6.2",
+    "prismjs": "1.29.0"
+  }
+}

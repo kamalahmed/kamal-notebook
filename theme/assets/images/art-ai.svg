@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" role="img" aria-label="Abstract branching idea diagram">
+  <rect width="640" height="470" fill="#d7e5ad"/><path d="M0 40h640M0 100h640M0 160h640M0 220h640M0 280h640M0 340h640M0 400h640M60 0v470M120 0v470M180 0v470M240 0v470M300 0v470M360 0v470M420 0v470M480 0v470M540 0v470M600 0v470" stroke="#678263" stroke-opacity=".18"/>
+  <path d="M103 233h106l98-94h104l111 94-112 96H307l-98-96" fill="none" stroke="#21463a" stroke-width="4"/><path d="M307 139v190M410 139v190" stroke="#21463a" stroke-width="4" stroke-dasharray="5 8"/>
+  <g fill="#f3f0db" stroke="#21463a" stroke-width="4"><circle cx="103" cy="233" r="22"/><circle cx="307" cy="139" r="28"/><circle cx="410" cy="139" r="22"/><circle cx="522" cy="233" r="31"/><circle cx="410" cy="329" r="24"/><circle cx="307" cy="329" r="28"/></g><circle cx="307" cy="139" r="13" fill="#eb6c48"/><circle cx="522" cy="233" r="15" fill="#eb6c48"/>
+  <text x="30" y="435" fill="#21463a" font-family="monospace" font-size="15" letter-spacing="3">QUESTIONS BEFORE ANSWERS</text>
+</svg>

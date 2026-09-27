@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 720" role="img" aria-labelledby="t d">
+  <title id="t">Abstract notebook illustration</title><desc id="d">Curving paper-like bands and an orange sun on a deep green grid.</desc>
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#d6e3d5" stroke-opacity=".10"/></pattern>
+    <linearGradient id="paper" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff6df"/><stop offset="1" stop-color="#bdcbb8"/></linearGradient>
+    <clipPath id="frame"><rect width="920" height="720" rx="4"/></clipPath>
+  </defs>
+  <g clip-path="url(#frame)">
+    <rect width="920" height="720" fill="#183d34"/><rect width="920" height="720" fill="url(#grid)"/>
+    <circle cx="746" cy="144" r="115" fill="#f16b45"/>
+    <circle cx="746" cy="144" r="141" fill="none" stroke="#f6eacb" stroke-opacity=".55" stroke-dasharray="3 10"/>
+    <path d="M-85 573c190-169 288-63 388-178 91-105 197-82 287-169 93-91 160-89 339-89v204c-167 5-208 17-321 119-106 96-218 77-308 174C166 777 53 683-85 794Z" fill="url(#paper)"/>
+    <path d="M-50 625c185-166 279-76 389-180 92-88 194-74 302-176 90-86 179-78 269-80" fill="none" stroke="#183d34" stroke-width="3" opacity=".7"/>
+    <path d="M-50 672c194-174 282-70 394-180 94-93 202-77 308-178 94-88 184-76 269-80" fill="none" stroke="#183d34" stroke-width="3" opacity=".7"/>
+    <path d="M-50 719c194-174 282-70 394-180 94-93 202-77 308-178 94-88 184-76 269-80" fill="none" stroke="#183d34" stroke-width="3" opacity=".7"/>
+    <path d="M-50 766c194-174 282-70 394-180 94-93 202-77 308-178 94-88 184-76 269-80" fill="none" stroke="#183d34" stroke-width="3" opacity=".7"/>
+    <circle cx="312" cy="400" r="12" fill="#f16b45"/><circle cx="598" cy="228" r="7" fill="#f16b45"/>
+    <path d="M312 400 178 285H62M598 228l-53-94H439" stroke="#f6eacb" stroke-width="2" fill="none" opacity=".9"/>
+    <g fill="#f6eacb" font-family="monospace" font-size="16" letter-spacing="3"><text x="62" y="270">START SMALL</text><text x="439" y="118">FOLLOW THE THREAD</text><text x="62" y="65">K / NOTEBOOK</text><text x="739" y="664">001 — 026</text></g>
+  </g>
+</svg>
