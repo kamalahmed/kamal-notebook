@@ -47,4 +47,6 @@ Contact delivery uses the site’s WordPress mail configuration. Saved articles 
 
 WordPress, PHP, native blocks, CSS, JavaScript, Canvas, and Prism syntax highlighting. No frontend framework or external image-generation service is required.
 
+The live site deploys through [Deployward](https://github.com/kamalahmed/deployward) using signed GitHub webhooks, without a GitHub Actions build.
+
 Created by [Kamal Ahmed](https://kamalahmed.me).
