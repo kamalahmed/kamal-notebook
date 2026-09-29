@@ -1867,7 +1867,7 @@ p {
 }
 :is(.article-content, [data-knt-lesson-content]) > h2,
 :is(.article-content, [data-knt-lesson-content]) > .wp-block-group > h2,
-:is(.article-content, [data-knt-lesson-content]) > .wp-block-group > .wp-block-heading {
+:is(.article-content, [data-knt-lesson-content]) > .wp-block-group > .wp-block-heading:not(.kn-utility-heading) {
   scroll-margin-top: 70px;
   margin: 74px 0 22px;
   font: 500 clamp(42px, 4.1vw, 59px) / 1.08 var(--serif);

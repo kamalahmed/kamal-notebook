@@ -88,7 +88,7 @@ get_header();
 		</a>
 	<?php else : ?>
 		<div class="lead-story lead-placeholder">
-			<div class="lead-art"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/feature.svg' ) ); ?>" alt="" width="920" height="720"></div>
+			<div class="lead-art"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/feature.svg' ) ); ?>" alt="" width="920" height="720" fetchpriority="high"></div>
 			<div class="lead-meta"><span><?php esc_html_e( 'The notebook', 'kamal-notebook' ); ?></span><span>✳</span></div>
 			<div class="lead-text">
 				<h2><?php esc_html_e( 'A space for what comes next.', 'kamal-notebook' ); ?></h2>

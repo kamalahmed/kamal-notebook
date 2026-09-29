@@ -3,7 +3,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KN_VERSION = '1.3.1';
+const KN_VERSION = '1.3.2';
 
 function kn_setup(): void {
 	add_theme_support( 'title-tag' );
@@ -22,7 +22,9 @@ add_action( 'after_setup_theme', 'kn_setup' );
 
 function kn_assets(): void {
 	wp_enqueue_style( 'kn-site', get_theme_file_uri( 'assets/css/site.css' ), array(), KN_VERSION );
-	wp_enqueue_style( 'kn-lessons', get_theme_file_uri( 'assets/css/lessons.css' ), array( 'kn-site' ), KN_VERSION );
+	if ( is_singular() && ! is_front_page() ) {
+		wp_enqueue_style( 'kn-lessons', get_theme_file_uri( 'assets/css/lessons.css' ), array( 'kn-site' ), KN_VERSION );
+	}
 	if ( is_page( array( 'about', 'contact' ) ) || is_page_template( array( 'page-about.php', 'page-contact.php' ) ) ) {
 		wp_enqueue_style( 'kn-pages', get_theme_file_uri( 'assets/css/pages.css' ), array( 'kn-site' ), KN_VERSION );
 	}
@@ -51,6 +53,14 @@ function kn_preload_fonts(): void {
 	}
 }
 add_action( 'wp_head', 'kn_preload_fonts', 2 );
+
+/** Respect the owner's Site Icon; supply a lightweight default when unset. */
+function kn_default_site_icon(): void {
+	if ( ! has_site_icon() && ! is_customize_preview() ) {
+		printf( '<link rel="icon" type="image/svg+xml" href="%s">' . "\n", esc_url( get_theme_file_uri( 'assets/images/favicon.svg' ) ) );
+	}
+}
+add_action( 'wp_head', 'kn_default_site_icon' );
 
 function kn_defaults(): array {
 	return array(
