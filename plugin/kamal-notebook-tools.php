@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Kamal Notebook Tools
  * Description: An editable code block and simple reader feedback for Kamal Notebook.
- * Version: 1.3.4
+ * Version: 1.3.5
  * Requires at least: 6.6
  * Requires PHP: 8.0
  * Author: Kamal Ahmed
@@ -11,8 +11,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KNT_VERSION = '1.3.4';
+const KNT_VERSION = '1.3.5';
 require_once __DIR__ . '/includes/reading-lab.php';
+require_once __DIR__ . '/includes/contact-lab.php';
 require_once __DIR__ . '/includes/demo-import.php';
 require_once __DIR__ . '/includes/featured.php';
 require_once __DIR__ . '/includes/contact.php';
