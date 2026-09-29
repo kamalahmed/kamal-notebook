@@ -41,7 +41,7 @@ Choose **Appearance → Notebook settings** to set the introduction, reading too
 
 For an example to explore, choose **Appearance → Import Notebook demo**. The importer adds labeled articles, a three-part course, and Home, Writing, About, and Contact pages. It can assign the static homepage and posts page while preserving existing content, contact recipients, and customized settings. Repeat imports reuse existing items. Demo content is a starter; transferring a customized site requires a separate content migration.
 
-With no custom menu assigned, navigation automatically links to the notebook, Writing, About, and Contact. An existing menu stays under your control. The importer preserves your site name and existing articles; the live site's personal biography and custom cover images are not part of the starter.
+With no custom menu assigned, navigation links to Writing, About, and Contact; the logo links home. An existing menu stays under your control. The importer preserves your site name and existing articles; the live site's personal biography and custom cover images are not part of the starter.
 
 Contact delivery uses the site’s WordPress mail configuration. Saved articles stay in the reader’s browser; they do not sync between devices.
 

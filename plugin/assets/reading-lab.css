@@ -1,0 +1,9 @@
+.knt-reading-lab { margin: 32px 0; padding: clamp(20px, 4vw, 36px); border: 1px solid var(--line, #bbb); border-top: 4px solid var(--accent, #aa5030); background: var(--paper-deep, #f0ece3); color: var(--ink, #213a32); }
+.knt-reading-lab .knt-lab-label { font: 600 12px/1.5 var(--mono, monospace); letter-spacing: .1em; }
+.knt-lab-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 24px 0; }
+.knt-lab-fields label { display: grid; gap: 8px; font: 500 14px/1.5 var(--sans, sans-serif); }
+.knt-lab-fields input, .knt-lab-fields select { width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--line, #aaa); background: var(--paper, #fff); color: inherit; font: inherit; font-size: 16px; }
+.knt-reading-lab output { display: block; margin: 18px 0; font: 500 clamp(20px, 2vw, 27px)/1.5 var(--serif, serif); overflow-wrap: anywhere; }
+.knt-reading-lab button { padding: 10px 16px; border: 1px solid currentColor; color: inherit; background: transparent; cursor: pointer; font: 500 14px/1.5 var(--sans, sans-serif); }
+.knt-reading-lab .knt-lab-note { margin-bottom: 0; font-size: 14px; line-height: 1.6; }
+@media(max-width: 560px) { .knt-lab-fields { grid-template-columns: 1fr; } }

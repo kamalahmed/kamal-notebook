@@ -21,19 +21,14 @@ while ( have_posts() ) :
 	);
 	?>
 	<article <?php post_class( 'kn-editorial-page kn-contact-page' ); ?>>
-		<header class="kn-page-hero container">
-			<div class="kn-page-hero-label"><span class="eyebrow"><?php esc_html_e( 'An open line', 'kamal-notebook' ); ?></span><span class="kn-page-hero-mark" aria-hidden="true">↗</span></div>
+		<header class="kn-page-hero kn-page-hero-compact container">
 			<div class="kn-page-hero-copy">
 				<h1><?php the_title(); ?></h1>
-				<p class="kn-page-deck"><?php esc_html_e( 'Have a question or a note to share? Write it here.', 'kamal-notebook' ); ?></p>
+				<p class="kn-page-deck"><?php esc_html_e( 'Questions about a tutorial, a project, or working together? Send me a message.', 'kamal-notebook' ); ?></p>
 			</div>
 		</header>
 		<div class="kn-page-rule" aria-hidden="true"><span></span><span></span><span></span></div>
 		<div class="kn-page-body container">
-			<aside class="kn-page-aside" aria-label="<?php esc_attr_e( 'Page context', 'kamal-notebook' ); ?>">
-				<span class="eyebrow">01 / <?php esc_html_e( 'Get in touch', 'kamal-notebook' ); ?></span>
-				<span class="kn-aside-glyph" aria-hidden="true">✳</span>
-			</aside>
 			<div class="kn-page-content">
 				<?php if ( trim( get_the_content() ) ) : ?><div class="article-content kn-contact-intro"><?php the_content(); ?></div><?php endif; ?>
 				<div id="contact-response">

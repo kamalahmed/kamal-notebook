@@ -8,12 +8,11 @@
 get_header();
 while ( have_posts() ) :
 	the_post();
-	$intro = has_excerpt() ? get_the_excerpt() : kn_option( 'about_heading' );
+	$intro = has_excerpt() ? get_the_excerpt() : '';
 	list( $biography, $sections ) = kn_prepare_article( apply_filters( 'the_content', get_the_content() ) );
 	?>
 	<article <?php post_class( 'kn-editorial-page kn-about-page' ); ?>>
-		<header class="kn-page-hero container">
-			<div class="kn-page-hero-label"><span class="eyebrow"><?php esc_html_e( 'A note from the margin', 'kamal-notebook' ); ?></span><span class="kn-page-hero-mark" aria-hidden="true">✳</span></div>
+		<header class="kn-page-hero kn-page-hero-compact container">
 			<div class="kn-page-hero-copy">
 				<h1><?php the_title(); ?></h1>
 				<?php if ( $intro ) : ?><p class="kn-page-deck"><?php echo esc_html( $intro ); ?></p><?php endif; ?>
@@ -22,8 +21,7 @@ while ( have_posts() ) :
 		<div class="kn-page-rule" aria-hidden="true"><span></span><span></span><span></span></div>
 		<div class="kn-page-body container">
 			<aside class="kn-page-aside" aria-label="<?php esc_attr_e( 'Page context', 'kamal-notebook' ); ?>">
-				<span class="eyebrow">01 / <?php esc_html_e( 'This space', 'kamal-notebook' ); ?></span>
-				<span class="kn-aside-glyph" aria-hidden="true">k.</span>
+				<span class="eyebrow"><?php esc_html_e( 'On this page', 'kamal-notebook' ); ?></span>
 				<?php if ( $sections ) : ?>
 					<nav class="kn-about-index" aria-label="<?php esc_attr_e( 'About page sections', 'kamal-notebook' ); ?>">
 						<?php foreach ( $sections as $section ) : ?>

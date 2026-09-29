@@ -3,7 +3,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KN_VERSION = '1.3.3';
+const KN_VERSION = '1.3.4';
 
 function kn_setup(): void {
 	add_theme_support( 'title-tag' );
@@ -293,7 +293,6 @@ function kn_archive_url(): string {
 
 function kn_menu_fallback(): void {
 	echo '<ul>';
-	printf( '<li><a href="%s">%s</a></li>', esc_url( home_url( '/' ) ), esc_html__( 'The notebook', 'kamal-notebook' ) );
 	printf( '<li><a href="%s">%s</a></li>', esc_url( kn_archive_url() . '#stories' ), esc_html__( 'Explore stories', 'kamal-notebook' ) );
 	foreach ( array( 'about' => __( 'About', 'kamal-notebook' ), 'contact' => __( 'Contact', 'kamal-notebook' ) ) as $slug => $label ) {
 		$page = get_page_by_path( $slug );
