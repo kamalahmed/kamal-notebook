@@ -1,0 +1,112 @@
+/* A low-glare reading palette. The original paper palette stays the light default. */
+.appearance-control {
+  flex: none;
+  position: relative;
+}
+.appearance-control::before {
+  content: "◐";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--accent-dark);
+  font-size: 15px;
+}
+.appearance-control select {
+  width: 102px;
+  padding: 9px 8px 9px 29px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 12px/1.2 var(--sans);
+  cursor: pointer;
+}
+.appearance-control select:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (max-width: 700px) {
+  .appearance-control { order: 1; }
+  .appearance-control select { width: 95px; }
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #171f1c;
+  --paper-deep: #222d27;
+  --ink: #f0eee4;
+  --ink-muted: #bfcbc1;
+  --ink-light: #27382f;
+  --line: #52645a;
+  --accent: #ff9b73;
+  --accent-dark: #ffad88;
+  --yellow: #e9c878;
+}
+html[data-theme="dark"] body { background: var(--paper); }
+html[data-theme="dark"] .article-content { color: var(--ink); }
+html[data-theme="dark"] .intro-deck,
+html[data-theme="dark"] .topic-tab,
+html[data-theme="dark"] .result-count,
+html[data-theme="dark"] .article-kicker span:last-child,
+html[data-theme="dark"] .article-standfirst,
+html[data-theme="dark"] .article-byline small,
+html[data-theme="dark"] .toc-label span,
+html[data-theme="dark"] .toc-end,
+html[data-theme="dark"] .article-content .kn-draft-prompt { color: var(--ink-muted); }
+html[data-theme="dark"] .art-sticker { color: #173a31; }
+html[data-theme="dark"] .topline,
+html[data-theme="dark"] .about-band,
+html[data-theme="dark"] .next-read {
+  background: #263b32;
+  color: #f0eee4;
+}
+html[data-theme="dark"] .topline { color: #dae4d8; }
+html[data-theme="dark"] .lead-art,
+html[data-theme="dark"] .article-hero-art { background: #263b32; }
+html[data-theme="dark"] .ribbon,
+html[data-theme="dark"] .toc-link:hover,
+html[data-theme="dark"] .toc-link.is-active,
+html[data-theme="dark"] .margin-card,
+html[data-theme="dark"] .article-content .kn-key-concepts,
+html[data-theme="dark"] .article-content .kn-takeaways,
+html[data-theme="dark"] .takeaways,
+html[data-theme="dark"] .kn-contact-notice,
+html[data-theme="dark"] .kn-contact-unavailable {
+  background: #25332b;
+}
+html[data-theme="dark"] .story-visual,
+html[data-theme="dark"] .article-content .kn-visual-walkthrough { background: #2b3b31; }
+html[data-theme="dark"] .article-content .kn-visual-walkthrough > .wp-block-image { background: #34483b; }
+html[data-theme="dark"] .note-visual { background: #dfbd73; color: #173a31; }
+html[data-theme="dark"] .field-note,
+html[data-theme="dark"] .article-content .kn-field-note { background: #392d29; }
+html[data-theme="dark"] .article-content .kn-takeaways,
+html[data-theme="dark"] .takeaways,
+html[data-theme="dark"] .article-content .kn-visual-walkthrough { border-color: var(--line); }
+html[data-theme="dark"] .kn-contact-field input,
+html[data-theme="dark"] .kn-contact-field textarea {
+  background: #222d27;
+  color: var(--ink);
+}
+html[data-theme="dark"] .article-content .kn-tutorial-intro > p:last-child,
+html[data-theme="dark"] .article-content .kn-visual-copy h3,
+html[data-theme="dark"] .takeaways p { color: var(--ink); }
+html[data-theme="dark"] .article-content .kn-lesson { border-color: var(--line); }
+html[data-theme="dark"] .article-content .kn-visual-walkthrough figcaption,
+html[data-theme="dark"] .article-content .kn-visual-copy > p:last-child { color: var(--ink-muted); }
+html[data-theme="dark"] .article-content .kn-tutorial-eyebrow,
+html[data-theme="dark"] .article-content .kn-lesson-label,
+html[data-theme="dark"] .article-content .kn-visual-label { color: var(--accent-dark); }
+html[data-theme="dark"] .kn-legacy-frame { background: var(--paper); }
+
+/* Light-palette literals on labels and secondary copy need their own dark ink. */
+html[data-theme="dark"] :is(.demo-note, .issue-no, .lead-text p, .story-meta, .story-excerpt, .archive-intro p, .archive-count, .article-meta, .toc-link, .article-content figcaption, .article-content cite, .article-content small, .article-end, .reader-status, .feedback-note, .site-footer small, .site-footer span, .kn-contact-submit p) {
+  color: var(--ink-muted);
+}
+html[data-theme="dark"] .article-content :is(.kn-takeaways, .kn-key-concepts, .kn-field-note) :is(p, li) {
+  color: var(--ink);
+}
+html[data-theme="dark"] .article-content a,
+html[data-theme="dark"] .kn-page-content a { text-decoration-color: var(--accent); }

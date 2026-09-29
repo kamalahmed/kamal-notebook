@@ -3,7 +3,8 @@
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="theme-color" content="#f6f2e9">
+	<meta name="theme-color" content="#f6f2e9" id="kn-theme-color">
+	<script>(function(){try{var choice=localStorage.getItem('kn-appearance');var dark=choice==='dark'||(choice!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';document.querySelector('#kn-theme-color').content=dark?'#171f1c':'#f6f2e9'}catch(e){}})();</script>
 	<?php
 	$description = is_singular() && has_excerpt()
 		? get_the_excerpt()
@@ -39,6 +40,14 @@
 	<nav class="main-nav" aria-label="<?php esc_attr_e( 'Main navigation', 'kamal-notebook' ); ?>">
 		<?php wp_nav_menu( array( 'theme_location' => 'primary', 'container' => false, 'fallback_cb' => 'kn_menu_fallback', 'depth' => 1 ) ); ?>
 	</nav>
+	<div class="appearance-control">
+		<label class="sr-only" for="kn-appearance"><?php esc_html_e( 'Appearance', 'kamal-notebook' ); ?></label>
+		<select id="kn-appearance" aria-label="<?php esc_attr_e( 'Appearance', 'kamal-notebook' ); ?>">
+			<option value="system"><?php esc_html_e( 'System', 'kamal-notebook' ); ?></option>
+			<option value="light"><?php esc_html_e( 'Light', 'kamal-notebook' ); ?></option>
+			<option value="dark"><?php esc_html_e( 'Dark', 'kamal-notebook' ); ?></option>
+		</select>
+	</div>
 	<?php if ( '1' === kn_option( 'save_enabled' ) ) : ?>
 		<button class="saved-trigger" type="button" data-open-saved>
 			<?php esc_html_e( 'Saved', 'kamal-notebook' ); ?>

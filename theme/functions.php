@@ -3,7 +3,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KN_VERSION = '1.3.2';
+const KN_VERSION = '1.3.3';
 
 function kn_setup(): void {
 	add_theme_support( 'title-tag' );
@@ -33,6 +33,7 @@ function kn_assets(): void {
 		wp_enqueue_style( 'kn-series', get_theme_file_uri( 'assets/css/series.css' ), array( 'kn-lessons' ), KN_VERSION );
 		wp_enqueue_script( 'kn-reader', get_theme_file_uri( 'assets/js/reader.js' ), array(), KN_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
 	}
+	wp_enqueue_style( 'kn-appearance', get_theme_file_uri( 'assets/css/appearance.css' ), array( 'kn-site' ), KN_VERSION );
 }
 add_action( 'wp_enqueue_scripts', 'kn_assets' );
 

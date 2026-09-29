@@ -1,6 +1,34 @@
 (() => {
   "use strict";
 
+  const appearance = document.querySelector("#kn-appearance");
+  const appearanceMedia = window.matchMedia("(prefers-color-scheme: dark)");
+  function readAppearance() {
+    try {
+      const choice = localStorage.getItem("kn-appearance");
+      return ["light", "dark"].includes(choice) ? choice : "system";
+    } catch {
+      return "system";
+    }
+  }
+  function applyAppearance() {
+    const choice = readAppearance();
+    const dark = choice === "dark" || (choice === "system" && appearanceMedia.matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.querySelector("#kn-theme-color")?.setAttribute("content", dark ? "#171f1c" : "#f6f2e9");
+    if (appearance) appearance.value = choice;
+  }
+  appearance?.addEventListener("change", () => {
+    try {
+      if (appearance.value === "system") localStorage.removeItem("kn-appearance");
+      else localStorage.setItem("kn-appearance", appearance.value);
+    } catch {}
+    applyAppearance();
+  });
+  appearanceMedia.addEventListener?.("change", applyAppearance);
+  window.addEventListener("storage", applyAppearance);
+  applyAppearance();
+
   const key = "kn-saved-v1";
   const dialog = document.querySelector("#kn-saved-dialog");
   const savedContent = dialog?.querySelector("[data-saved-content]");
