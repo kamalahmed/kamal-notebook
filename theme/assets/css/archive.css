@@ -1,0 +1,33 @@
+/* Keep the archive's editorial layout fluid during partial navigation. */
+.archive-status:not(.has-error) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.archive-status.has-error { color: var(--ink); font-size: 13px; }
+.archive-status a { color: var(--ink); text-underline-offset: 4px; }
+.archive-results { transition: opacity 160ms ease; outline: none; }
+.archive-results:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
+.is-loading .archive-results { opacity: .45; }
+.is-loading .result-count::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  margin-right: 8px;
+  animation: kn-archive-spin 650ms linear infinite;
+}
+.explore-bar { scroll-margin-top: 100px; }
+@keyframes kn-archive-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .archive-results { transition: none; }
+  .is-loading .result-count::before { animation: none; }
+}

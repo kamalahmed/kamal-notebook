@@ -114,7 +114,8 @@ function knt_contact_process( int $page_id ): string {
 		return 'invalid';
 	}
 
-	$captcha = knt_contact_verify_captcha( knt_contact_post_field( 'cf-turnstile-response' ) ?? '' );
+	$token_field = 'recaptcha' === knt_contact_security_settings()['contact_captcha'] ? 'g-recaptcha-response' : 'cf-turnstile-response';
+	$captcha = knt_contact_verify_captcha( knt_contact_post_field( $token_field ) ?? '' );
 	if ( is_wp_error( $captcha ) ) { return $captcha->get_error_code(); }
 	$duplicate_key = knt_contact_security_key( 'duplicate', strtolower( $email ) . "\n" . $message );
 	$duplicate = knt_contact_reserve( $duplicate_key, 1, HOUR_IN_SECONDS );

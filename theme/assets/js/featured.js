@@ -1,9 +1,12 @@
 (() => {
   "use strict";
+  function initFeatured() {
   document.querySelectorAll("[data-kn-featured]").forEach((carousel) => {
+    if (carousel.dataset.initialized) return;
     const slides = [...carousel.querySelectorAll(".kn-featured-slide")];
     const controls = carousel.querySelector(".kn-featured-controls");
     if (slides.length < 2 || !controls) return;
+    carousel.dataset.initialized = "true";
     let current = 0;
     function show(index) {
       current = (index + slides.length) % slides.length;
@@ -23,4 +26,7 @@
     carousel.querySelector("[data-featured-next]").addEventListener("click", () => show(current + 1));
     controls.hidden = false;
   });
+  }
+  initFeatured();
+  document.addEventListener("kn:archivechange", initFeatured);
 })();

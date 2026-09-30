@@ -37,14 +37,18 @@ if ( $series_term ) {
 }
 $stories = new WP_Query( $story_query );
 
-if ( $leads ) {
+if ( ! $series_term ) {
 	// Queue after the base assets, so their dependency does not move site.css
 	// ahead of WordPress global styles and override the appearance palette.
-	add_action( 'wp_enqueue_scripts', static function () use ( $leads ) {
+	add_action( 'wp_enqueue_scripts', static function () {
 		wp_enqueue_style( 'kn-featured', get_theme_file_uri( 'assets/css/featured.css' ), array( 'kn-site' ), KN_VERSION );
-		if ( count( $leads ) > 1 ) { wp_enqueue_script( 'kn-featured', get_theme_file_uri( 'assets/js/featured.js' ), array(), KN_VERSION, true ); }
+		wp_enqueue_script( 'kn-featured', get_theme_file_uri( 'assets/js/featured.js' ), array(), KN_VERSION, true );
 	}, 20 );
 }
+add_action( 'wp_enqueue_scripts', static function () {
+	wp_enqueue_style( 'kn-archive', get_theme_file_uri( 'assets/css/archive.css' ), array( 'kn-site' ), KN_VERSION );
+	wp_enqueue_script( 'kn-archive', get_theme_file_uri( 'assets/js/archive.js' ), array(), KN_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
+}, 20 );
 get_header();
 ?>
 <?php if ( $series_term ) : ?>
@@ -134,7 +138,7 @@ get_header();
 </div>
 
 <?php endif; ?>
-<section id="stories" class="stories-section container" aria-labelledby="stories-title">
+<section id="stories" data-kn-archive data-loading="<?php esc_attr_e( 'Loading stories…', 'kamal-notebook' ); ?>" data-error="<?php esc_attr_e( 'Stories could not be loaded. Try again or open this view.', 'kamal-notebook' ); ?>" class="stories-section container" aria-labelledby="stories-title">
 	<div class="section-heading">
 		<?php if ( $series_term ) : ?>
 		<div><div class="eyebrow section-eyebrow"><?php esc_html_e( 'STEP BY STEP', 'kamal-notebook' ); ?></div><h2 id="stories-title"><?php esc_html_e( 'The lessons', 'kamal-notebook' ); ?></h2></div>
@@ -165,6 +169,8 @@ get_header();
 	</div>
 
 	<?php endif; ?>
+	<p class="archive-status" role="status" aria-live="polite" aria-atomic="true"></p>
+	<div class="archive-results" tabindex="-1">
 	<p class="result-count">
 		<?php printf( esc_html( $series_term ? _n( '%s lesson', '%s lessons', $stories->found_posts, 'kamal-notebook' ) : _n( '%s story', '%s stories', $stories->found_posts, 'kamal-notebook' ) ), esc_html( number_format_i18n( $stories->found_posts ) ) ); ?>
 	</p>
@@ -210,6 +216,7 @@ get_header();
 			echo paginate_links( $pagination ); ?>
 		</nav>
 	<?php endif; ?>
+	</div>
 </section>
 
 <section class="about-band" aria-labelledby="about-title">

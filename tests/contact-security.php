@@ -14,6 +14,7 @@ $original_prefix = $wpdb->prefix;
 $wpdb->prefix .= 'security_test_' . substr( str_replace( '-', '', wp_generate_uuid4() ), 0, 12 ) . '_';
 $wpdb->query( "CREATE TABLE {$wpdb->prefix}knt_contact_limits LIKE {$original_prefix}knt_contact_limits" );
 $old = get_option( 'kn_settings' );
+$old_google_secret = get_option( 'knt_contact_recaptcha_secret', null );
 $old_secret = get_option( 'knt_contact_turnstile_secret', null );
 $run = 'test-' . wp_generate_uuid4();
 $keys = array();
@@ -22,10 +23,11 @@ $http_count = 0;
 $mock = 'success';
 $mail_filter = static function () use ( &$mail_count ) { $mail_count++; return true; };
 $http_filter = static function ( $pre, $request, $url ) use ( &$http_count, &$mock ) {
-	if ( 'https://challenges.cloudflare.com/turnstile/v0/siteverify' !== $url ) { return $pre; }
+	if ( ! in_array( $url, array( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', 'https://www.google.com/recaptcha/api/siteverify' ), true ) ) { return $pre; }
 	$http_count++;
 	if ( 'network' === $mock ) { return new WP_Error( 'http_request_failed', 'Mock timeout' ); }
 	$body = array( 'success' => true, 'hostname' => wp_parse_url( home_url(), PHP_URL_HOST ), 'action' => 'notebook_contact' );
+	if ( str_contains( $url, 'google.com' ) ) { unset( $body['action'] ); }
 	if ( 'reject' === $mock ) { $body['success'] = false; $body['error-codes'] = array( 'timeout-or-duplicate' ); }
 	if ( 'host' === $mock ) { $body['hostname'] = 'evil.example'; }
 	if ( 'action' === $mock ) { $body['action'] = 'another_form'; }
@@ -100,9 +102,41 @@ try {
 	$turnstile_scripts = array_filter( wp_scripts()->queue, static function ( $handle ) { return false !== strpos( (string) wp_scripts()->registered[$handle]->src, 'challenges.cloudflare.com/turnstile/v0/api.js' ); } );
 	knt_security_test_assert( 1 === count( $turnstile_scripts ), 'One Cloudflare loader when CF7 already enqueued it.' );
 	knt_security_test_assert( false !== strpos( $widget, 'data-action="notebook_contact"' ), 'Widget action matches server.' );
+
+	$settings['contact_captcha'] = 'recaptcha';
+	$settings['contact_recaptcha_sitekey'] = 'test-google-key';
+	update_option( 'kn_settings', $settings );
+	knt_security_test_assert( is_wp_error( knt_contact_verify_captcha( '' ) ), 'Google mode must reject missing tokens.' );
+
+	update_option( 'knt_contact_recaptcha_secret', 'google-test-secret', false );
+	foreach ( array( 'success', 'reject', 'host', 'network', 'json', 'status' ) as $case ) {
+		$mock = $case;
+		$result = knt_contact_verify_captcha( $run . '-google-' . $case );
+		knt_security_test_assert( ( true === $result ) === ( 'success' === $case ), 'Google CAPTCHA case: ' . $case );
+	}
+	$before = $http_count;
+	foreach ( array( '', str_repeat( 'x', 2049 ), $run . '-google-success' ) as $invalid ) {
+		knt_security_test_assert( is_wp_error( knt_contact_verify_captcha( $invalid ) ), 'Google missing, oversized and replay tokens rejected.' );
+	}
+	knt_security_test_assert( $before === $http_count, 'Google invalid and replay tokens rejected before network.' );
+	$mock = 'success';
+	$_SERVER['REMOTE_ADDR'] = '198.51.100.' . random_int( 1, 254 );
+	$_POST['contact_message'] = $run . '-google-form';
+	$_POST['g-recaptcha-response'] = $run . '-google-form-token';
+	$_POST['cf-turnstile-response'] = '';
+	knt_security_test_assert( 'sent' === knt_contact_process( $page->ID ), 'Google form reads Google response field.' );
+	knt_security_test_assert( 2 === $mail_count, 'One intercepted Google email.' );
+	$_POST['g-recaptcha-response'] = '';
+	$_POST['cf-turnstile-response'] = $run . '-wrong-provider';
+	knt_security_test_assert( 'captcha' === knt_contact_process( $page->ID ), 'Google mode cannot use Cloudflare response.' );
+	ob_start(); knt_security_settings_fields(); $html = ob_get_clean();
+	knt_security_test_assert( false === strpos( $html, 'google-test-secret' ), 'Google secret never rendered.' );
+	ob_start(); knt_contact_security_fields(); $widget = ob_get_clean();
+	knt_security_test_assert( str_contains( $widget, 'data-knt-recaptcha' ) && ! str_contains( $widget, 'cf-turnstile' ), 'Only selected Google widget rendered.' );
 	WP_CLI::success( $GLOBALS['knt_security_checks'] . " contact security assertions passed; all mail intercepted, all Siteverify calls mocked." );
 } finally {
 	update_option( 'kn_settings', $old );
+	if ( null === $old_google_secret ) { delete_option( 'knt_contact_recaptcha_secret' ); } else { update_option( 'knt_contact_recaptcha_secret', $old_google_secret, false ); }
 	if ( null === $old_secret ) { delete_option( 'knt_contact_turnstile_secret' ); } else { update_option( 'knt_contact_turnstile_secret', $old_secret, false ); }
 	remove_filter( 'pre_wp_mail', $mail_filter ); remove_filter( 'pre_http_request', $http_filter, 10 );
 	$wpdb->query( "DROP TABLE {$wpdb->prefix}knt_contact_limits" );

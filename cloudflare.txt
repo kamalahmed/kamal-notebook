@@ -1,0 +1,62 @@
+KAMAL NOTEBOOK — CONTACT CAPTCHA SETUP
+
+This file is a setup guide, not a Cloudflare configuration file. No special
+cloudflare.txt file needs to be uploaded to your website or DNS provider.
+Activate Notebook Tools, then open Appearance > Notebook settings > Contact & security.
+
+CLOUDFLARE TURNSTILE
+1. Open https://dash.cloudflare.com/ and select Turnstile. Create a widget.
+2. Add your exact public hostname (and www hostname if visitors use it).
+   Choose Managed mode. Turnstile does not require Cloudflare DNS/proxying.
+3. In Notebook settings select Cloudflare Turnstile for Contact CAPTCHA.
+4. Choose custom Turnstile credentials and paste the widget's site key and
+   secret key. Alternatively choose the existing Contact Form 7 integration
+   if you already configured Turnstile under Contact > Integration.
+5. Save. Open /contact/ as a signed-out visitor and complete verification.
+   Submit one deliberate test note and check its arrival in the configured inbox.
+6. Empty, expired, reused, wrong-hostname and failed verification tokens must
+   not send mail. Verify again before retrying after any failed submission.
+
+Official setup: https://developers.cloudflare.com/turnstile/get-started/
+Hostnames: https://developers.cloudflare.com/turnstile/additional-configuration/hostname-management/
+Server verification: https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
+Test keys: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+
+GOOGLE reCAPTCHA — OPTIONAL ALTERNATIVE
+1. Register a reCAPTCHA v2 "I'm not a robot" checkbox key pair for your hostname:
+   https://www.google.com/recaptcha/admin/create
+2. Select Google reCAPTCHA v2 (checkbox) in Contact CAPTCHA.
+3. Enter the separate Google reCAPTCHA v2 site key and secret key. The Turnstile
+   credentials selector applies only to Turnstile. CF7's v3 keys cannot be reused.
+   This integration uses Google's Siteverify API; v3/invisible/Enterprise-only
+   integrations are not supported. Use keys compatible with the v2 checkbox
+   and Siteverify flow documented below.
+4. Save and test /contact/ as a signed-out visitor. The widget uses compact
+   sizing to stay usable on narrow screens and after device rotation.
+5. The server validates the token and hostname before mail can be sent, and
+   rejects replays. A provider outage blocks sending while CAPTCHA is enabled.
+
+Widget/key setup: https://developers.google.com/recaptcha/docs/display
+Server verification: https://developers.google.com/recaptcha/docs/verify
+Testing: https://developers.google.com/recaptcha/docs/faq
+
+TESTING AND SECRETS
+Use provider test keys only on an isolated development site, never production.
+Google's public v2 keys always pass provider verification; they do not prove
+bot protection. Notebook still checks the returned hostname. Google's test
+response can report testkey.google.com; that must fail on a different hostname.
+Test widget rendering/provider connectivity separately from the application
+hostname check. Use a real hostname-specific key pair for a complete live test.
+Do not weaken production hostname validation to accommodate test keys.
+
+Secrets are stored separately on the server, never printed in the settings
+form. Leave a secret field blank to keep its stored value. Configure complete
+credentials before enabling either provider. Only the selected provider's
+widget is rendered by Notebook; other plugins may enqueue their own scripts.
+Check your privacy notice and any consent requirements for the chosen provider.
+
+WITHOUT A THIRD-PARTY CAPTCHA
+Choose Off to keep Notebook's built-in honeypot, duplicate suppression, and
+per-IP, per-email and site-wide rate limits without loading a CAPTCHA provider.
+These measures reduce abuse but do not constitute a human-verification test.
+No homemade puzzle CAPTCHA is included.

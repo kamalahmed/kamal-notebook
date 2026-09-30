@@ -17,7 +17,8 @@ The theme handles presentation. **Notebook Tools**, its companion plugin, adds t
 - **An intentional featured story**, chosen by the author.
 - **Native block editing** with article patterns, a live outline, and an editable code block.
 - **Reader tools** for sharing, saving on the current device, and leaving feedback.
-- **A contact form** with validation, duplicate suppression, honeypot protection, and rate limits.
+- **A contact form** with validation, duplicate suppression, honeypot protection, rate limits, and optional Cloudflare Turnstile or Google reCAPTCHA v2.
+- **Smooth archive filtering** with in-place topic, search, and pagination updates, browser history, and reduced-motion support.
 
 ## A closer look
 
@@ -64,3 +65,7 @@ Local fonts, deferred scripts, responsive images, and page-specific styles keep 
 The live site deploys through [Deployward](https://github.com/kamalahmed/deployward) using signed GitHub webhooks, without a GitHub Actions build.
 
 Created by [Kamal Ahmed](https://kamalahmed.me).
+
+### Contact verification
+
+See [cloudflare.txt](cloudflare.txt) for Turnstile and Google reCAPTCHA setup, official documentation, and testing instructions. Both are optional; the built-in honeypot and rate limits also work without a third-party CAPTCHA.

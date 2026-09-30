@@ -3,7 +3,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KN_VERSION = '1.4.1';
+const KN_VERSION = '1.5.0';
 
 function kn_setup(): void {
 	add_theme_support( 'title-tag' );
