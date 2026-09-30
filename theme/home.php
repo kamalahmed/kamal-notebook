@@ -38,8 +38,12 @@ if ( $series_term ) {
 $stories = new WP_Query( $story_query );
 
 if ( $leads ) {
-	wp_enqueue_style( 'kn-featured', get_theme_file_uri( 'assets/css/featured.css' ), array( 'kn-site' ), KN_VERSION );
-	if ( count( $leads ) > 1 ) { wp_enqueue_script( 'kn-featured', get_theme_file_uri( 'assets/js/featured.js' ), array(), KN_VERSION, true ); }
+	// Queue after the base assets, so their dependency does not move site.css
+	// ahead of WordPress global styles and override the appearance palette.
+	add_action( 'wp_enqueue_scripts', static function () use ( $leads ) {
+		wp_enqueue_style( 'kn-featured', get_theme_file_uri( 'assets/css/featured.css' ), array( 'kn-site' ), KN_VERSION );
+		if ( count( $leads ) > 1 ) { wp_enqueue_script( 'kn-featured', get_theme_file_uri( 'assets/js/featured.js' ), array(), KN_VERSION, true ); }
+	}, 20 );
 }
 get_header();
 ?>
