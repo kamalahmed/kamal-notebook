@@ -43,6 +43,16 @@ For an example to explore, choose **Appearance → Import Notebook demo**. The i
 
 With no custom menu assigned, navigation links to Writing, About, and Contact; the logo links home. An existing menu stays under your control. The importer preserves your site name and existing articles; the live site's personal biography and custom cover images are not part of the starter.
 
+### Featured articles and contact protection
+
+In **Appearance → Notebook settings → Homepage**, choose **Single featured article** or **Featured article slider**, then choose up to four published articles in display order and save. The first article leads the homepage and Writing page. The slider uses reader-controlled previous/next buttons. Checking **Featured** in an article’s editor moves it into the first position; unchecking removes it from the selection.
+
+The **Contact & security** tab controls the recipient, Cloudflare Turnstile and flood limits. Turnstile can reuse the existing Contact Form 7 integration or use custom credentials. A custom widget must allow the site hostname; its secret is stored separately and is never shown again. Leaving the secret field blank preserves it. Verification happens on the server and checks the hostname and `notebook_contact` action; missing, invalid or unavailable verification blocks sending when enabled.
+
+Rate protection is always active: defaults are 20 attempts per IP per 10 minutes, 5 send attempts per IP per hour, 3 per sender email per hour, and 20 across the site per hour. All limits are configurable. Duplicate messages and token replays are also blocked. Counters use atomic database operations, hashed identities and automatic expiry. Shared networks share the IP budget; failed mail attempts still consume the send budget. Protection limits abuse but does not guarantee that every unwanted message is blocked.
+
+Search finds controls across every tab. One **Save notebook settings** button saves all tabs together.
+
 Contact delivery uses the site’s WordPress mail configuration. Saved articles stay in the reader’s browser; they do not sync between devices.
 
 ## Built with

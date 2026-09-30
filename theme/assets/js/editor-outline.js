@@ -66,9 +66,9 @@
     }
     return h(Fragment, null,
       h(PluginPostStatusInfo, { className: "kn-editor-post-tools" },
-        window.knFeatureAvailable ? h("label", { className: "kn-editor-featured" },
+        window.knFeatureAvailable ? h("label", { className: "kn-editor-featured", title: __("Checking puts this article first. Manage the full selection in Appearance → Notebook settings.", "kamal-notebook") },
           h("input", { type: "checkbox", checked: featured, onChange: (event) => editPost({ meta: { _knt_featured: event.target.checked } }) }),
-          h("span", null, __("Featured article on the homepage", "kamal-notebook"))
+          h("span", null, __("Feature this article on the homepage", "kamal-notebook"))
         ) : null,
         h("p", null, __("Set the cover in Post → Featured image.", "kamal-notebook")),
         window.knCoverStudioBase && postId ? h("a", { href: `${window.knCoverStudioBase}${Number(postId)}`, className: "kn-editor-cover-link" }, __("Create an illustrated cover ↗", "kamal-notebook")) : null,

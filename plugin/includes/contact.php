@@ -8,6 +8,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+require_once __DIR__ . '/contact-security.php';
 
 /** Return only valid addresses from the theme setting; never guess a receiver. */
 function knt_contact_recipients(): array {
@@ -75,24 +76,33 @@ function knt_handle_contact_submission(): void {
 	if ( ! knt_contact_page_is_valid( $page_id ) ) {
 		wp_die( esc_html__( 'This contact page is unavailable.', 'kamal-notebook-tools' ), '', array( 'response' => 404 ) );
 	}
+	knt_contact_redirect( $page_id, knt_contact_process( $page_id ) );
+}
+
+/** Process a validated contact page; returns a generic public status. */
+function knt_contact_process( int $page_id ): string {
 	if ( ! knt_contact_ready() ) {
-		knt_contact_redirect( $page_id, 'unavailable' );
+		return 'unavailable';
 	}
+	$settings = knt_contact_security_settings();
+	$ip = knt_contact_remote_ip();
+	$attempt = knt_contact_reserve( knt_contact_security_key( 'attempt', $ip ), $settings['contact_attempt_limit'], $settings['contact_attempt_window'] * MINUTE_IN_SECONDS );
+	if ( is_wp_error( $attempt ) ) { return $attempt->get_error_code(); }
 	$nonce = knt_contact_post_field( 'knt_contact_nonce' );
 	if ( ! $nonce || ! wp_verify_nonce( $nonce, 'knt_contact_' . $page_id ) ) {
-		knt_contact_redirect( $page_id, 'nonce' );
+		return 'nonce';
 	}
 
-	// A filled field is treated as delivered, without sending mail to anyone.
+	// Reject the honeypot without claiming delivery.
 	if ( '' !== trim( knt_contact_post_field( 'website' ) ?? '' ) ) {
-		knt_contact_redirect( $page_id, 'sent' );
+		return 'invalid';
 	}
 
 	$raw_name = knt_contact_post_field( 'contact_name' );
 	$raw_email = knt_contact_post_field( 'contact_email' );
 	$raw_message = knt_contact_post_field( 'contact_message' );
 	if ( null === $raw_name || null === $raw_email || null === $raw_message ) {
-		knt_contact_redirect( $page_id, 'invalid' );
+		return 'invalid';
 	}
 	$name = trim( sanitize_text_field( $raw_name ) );
 	$email = trim( $raw_email );
@@ -101,26 +111,22 @@ function knt_handle_contact_submission(): void {
 	$name_length = function_exists( 'mb_strlen' ) ? mb_strlen( $name, 'UTF-8' ) : strlen( $name );
 	$message_length = function_exists( 'mb_strlen' ) ? mb_strlen( $message, 'UTF-8' ) : strlen( $message );
 	if ( '' === $name || $name_length > 100 || '' === $message || $message_length > 5000 || strlen( $email ) > 254 || ! is_email( $email ) ) {
-		knt_contact_redirect( $page_id, 'invalid' );
+		return 'invalid';
 	}
 
-	// Hash addresses and IPs before using them as transient keys; store no form text.
-	$ip = isset( $_SERVER['REMOTE_ADDR'] ) && is_string( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '';
-	$ip = filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '';
-	$identity = '' !== $ip ? $ip : $email;
-	$rate_key = 'knt_contact_rate_' . substr( hash_hmac( 'sha256', $identity, wp_salt( 'auth' ) ), 0, 32 );
-	$email_key = 'knt_contact_email_' . substr( hash_hmac( 'sha256', strtolower( $email ), wp_salt( 'auth' ) ), 0, 32 );
-	if ( (int) get_transient( $rate_key ) >= 5 || (int) get_transient( $email_key ) >= 3 ) {
-		knt_contact_redirect( $page_id, 'limited' );
+	$captcha = knt_contact_verify_captcha( knt_contact_post_field( 'cf-turnstile-response' ) ?? '' );
+	if ( is_wp_error( $captcha ) ) { return $captcha->get_error_code(); }
+	$duplicate_key = knt_contact_security_key( 'duplicate', strtolower( $email ) . "\n" . $message );
+	$duplicate = knt_contact_reserve( $duplicate_key, 1, HOUR_IN_SECONDS );
+	if ( is_wp_error( $duplicate ) ) { return $duplicate->get_error_code(); }
+	// Conservative budgets count reserved mail attempts, including transport failures.
+	foreach ( array( array( 'send-ip', $ip, $settings['contact_ip_limit'] ), array( 'send-email', strtolower( $email ), $settings['contact_email_limit'] ), array( 'send-global', 'all', $settings['contact_global_limit'] ) ) as $budget ) {
+		$result = knt_contact_reserve( knt_contact_security_key( $budget[0], $budget[1] ), $budget[2], HOUR_IN_SECONDS );
+		if ( is_wp_error( $result ) ) {
+			knt_contact_release( $duplicate_key );
+			return $result->get_error_code();
+		}
 	}
-
-	$duplicate_key = 'knt_contact_dup_' . substr( hash_hmac( 'sha256', strtolower( $email ) . "\n" . $message, wp_salt( 'auth' ) ), 0, 32 );
-	if ( get_transient( $duplicate_key ) ) {
-		knt_contact_redirect( $page_id, 'sent' );
-	}
-
-	set_transient( $rate_key, (int) get_transient( $rate_key ) + 1, HOUR_IN_SECONDS );
-	set_transient( $email_key, (int) get_transient( $email_key ) + 1, HOUR_IN_SECONDS );
 	$body = sprintf(
 		"A message from the notebook contact page\n\nName: %s\nEmail: %s\n\n%s\n\nPage: %s\n",
 		$name,
@@ -135,11 +141,11 @@ function knt_handle_contact_submission(): void {
 		array( 'Content-Type: text/plain; charset=UTF-8', 'Reply-To: ' . $email )
 	);
 	if ( ! $sent ) {
-		knt_contact_redirect( $page_id, 'failed' );
+		knt_contact_release( $duplicate_key );
+		return 'failed';
 	}
 
-	set_transient( $duplicate_key, 1, HOUR_IN_SECONDS );
-	knt_contact_redirect( $page_id, 'sent' );
+	return 'sent';
 }
 add_action( 'admin_post_nopriv_knt_contact', 'knt_handle_contact_submission' );
 add_action( 'admin_post_knt_contact', 'knt_handle_contact_submission' );

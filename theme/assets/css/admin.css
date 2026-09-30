@@ -81,3 +81,51 @@
     grid-template-columns: 1fr;
   }
 }
+/* Notebook settings: an editorial workspace with native WordPress controls. */
+.kn-admin { max-width: 1200px; margin-right: 24px; color: #243e35; }
+.kn-settings-header { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 32px 0 26px; border-bottom: 2px solid #243e35; }
+.kn-settings-kicker { color: #8e442d; font: 600 11px/1.5 monospace; letter-spacing: .14em; }
+.kn-settings-header h1 { margin: 10px 0; padding: 0; color: #173a31; font: 500 clamp(32px,4vw,48px)/1.15 Georgia,serif; letter-spacing: -.04em; }
+.kn-settings-header p { margin: 8px 0 0; font-size: 14px; }
+.kn-settings-search { display: none; max-width: 660px; padding: 24px 0 16px; }
+.kn-admin.is-enhanced .kn-settings-search { display: block; }
+.kn-settings-search label { display: block; margin-bottom: 8px; font-weight: 600; }
+.kn-settings-search > div { display: flex; gap: 8px; }
+.kn-settings-search input { width: 100%; padding: 8px 12px; font-size: 14px; background: white; }
+.kn-settings-search button { padding: 6px 14px; border: 1px solid #9ca8a2; border-radius: 4px; background: white; color: #243e35; cursor: pointer; }
+.kn-settings-search [role=status] { min-height: 18px; margin: 6px 0 0; color: #58695f; }
+.kn-settings-layout { display: grid; grid-template-columns: 210px minmax(0,1fr); gap: 32px; align-items: start; }
+.kn-settings-tabs { display: none; }
+.kn-admin.is-enhanced .kn-settings-tabs { display: grid; gap: 6px; position: sticky; top: 52px; }
+.kn-settings-tabs button { display: flex; justify-content: space-between; align-items: center; padding: 13px 14px; text-align: left; border: 0; border-left: 3px solid transparent; background: transparent; color: #344a40; font: inherit; font-size: 14px; font-weight: 600; line-height: 1.4; cursor: pointer; }
+.kn-settings-tabs button[aria-selected=true] { color: #173a31; background: #e1e8df; border-left-color: #ad5134; }
+.kn-settings-tabs button:hover { background: #e8ede7; }
+.kn-settings-tabs p { padding: 12px 14px; color: #59685f; font-size: 12px; line-height: 1.7; }
+.kn-admin :focus-visible { outline: 2px solid #a04930; outline-offset: 3px; }
+.kn-settings-panels { min-width: 0; }
+.kn-admin:not(.is-enhanced) .kn-settings-panels { grid-column: 1 / -1; }
+.kn-admin [hidden] { display: none !important; }
+.kn-panel-intro { padding: 9px 0 18px; }
+.kn-panel-intro > span { color: #68746c; font: 11px/1.5 monospace; letter-spacing: .08em; }
+.kn-panel-intro h2 { margin: 10px 0; font: 500 30px/1.2 Georgia,serif; color: #173a31; }
+.kn-panel-intro p { color: #59685f; margin: 0; font-size: 14px; line-height: 1.7; }
+.kn-setting-card, .kn-settings-panels [data-kn-setting] { margin: 0 0 20px; padding: 24px; background: #fff; border: 1px solid #d1d8d1; border-radius: 6px; }
+.kn-settings-panels [data-kn-setting] [data-kn-setting] { border: 0; padding: 0; }
+.kn-settings-panels h3 { margin: 0 0 12px; color: #173a31; font-size: 17px; }
+.kn-settings-panels p { line-height: 1.7; }
+.kn-settings-panels label { line-height: 1.6; }
+.kn-settings-panels .regular-text, .kn-settings-panels select, .kn-settings-panels textarea { max-width: 100%; }
+.kn-settings-panels select { min-height: 36px; }
+.kn-settings-panels input[type=text], .kn-settings-panels input[type=email], .kn-settings-panels input[type=password], .kn-settings-panels input[type=number], .kn-settings-panels textarea { padding: 7px 10px; }
+.kn-settings-panels .description { font-size: 13px; color: #58695f; }
+.kn-settings-save { display: flex; align-items: center; gap: 18px; margin-top: 24px; padding: 20px 0; border-top: 1px solid #c3ccc3; }
+.kn-settings-save .button-primary { background: #173a31; border-color: #173a31; padding: 6px 18px; }
+.kn-settings-save span { color: #58695f; font-size: 12px; }
+.kn-admin-help { max-width: none; margin-top: 36px; border-left-color: #ad5134; }
+@media(max-width:900px) { .kn-settings-layout { grid-template-columns: 1fr; gap: 16px; } .kn-admin.is-enhanced .kn-settings-tabs { position: static; grid-template-columns: repeat(2,minmax(0,1fr)); } .kn-settings-tabs p { grid-column: 1/-1; margin: 0; padding: 4px 12px; } }
+@media(max-width:600px) { .kn-admin { margin-right: 12px; } .kn-settings-header { align-items: flex-start; flex-direction: column; } .kn-setting-card, .kn-settings-panels [data-kn-setting] { padding: 18px; } .kn-settings-save { flex-wrap: wrap; } .kn-settings-panels input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]), .kn-settings-panels select, .kn-settings-panels textarea { font-size: 16px; width: 100%; } }
+
+.kn-setting-card > label { display: block; margin-bottom: 8px; font-weight: 600; }
+.kn-setting-card > select, .kn-setting-card > input[type=text], .kn-setting-card > input[type=password] { width: 100%; max-width: 660px; }
+
+.kn-settings-panels [data-kn-setting] > label { display: block; margin-bottom: 8px; }

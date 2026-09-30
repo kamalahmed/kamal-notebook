@@ -3,7 +3,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KN_VERSION = '1.3.4';
+const KN_VERSION = '1.4.0';
 
 function kn_setup(): void {
 	add_theme_support( 'title-tag' );
@@ -64,7 +64,7 @@ function kn_default_site_icon(): void {
 add_action( 'wp_head', 'kn_default_site_icon' );
 
 function kn_defaults(): array {
-	return array(
+	$defaults = array(
 		'archive_layout' => 'grid',
 		'hero_prefix'    => 'Stay a little',
 		'hero_accent'    => 'curious.',
@@ -76,6 +76,10 @@ function kn_defaults(): array {
 		'feedback_enabled' => '1',
 		'contact_email'  => '',
 	);
+	foreach ( array( 'knt_featured_defaults', 'knt_security_defaults' ) as $provider ) {
+		if ( function_exists( $provider ) ) { $defaults = array_merge( $defaults, $provider() ); }
+	}
+	return $defaults;
 }
 
 function kn_option( string $key ): string {
@@ -85,7 +89,9 @@ function kn_option( string $key ): string {
 
 function kn_sanitize_settings( $input ): array {
 	$defaults = kn_defaults();
-	$clean    = array();
+	$previous = get_option( 'kn_settings', array() );
+	$previous = is_array( $previous ) ? $previous : array();
+	$clean    = $previous;
 	$input    = is_array( $input ) ? $input : array();
 	$clean['archive_layout'] = in_array( $input['archive_layout'] ?? '', array( 'grid', 'index' ), true ) ? $input['archive_layout'] : $defaults['archive_layout'];
 	foreach ( array( 'hero_prefix', 'hero_accent', 'hero_deck', 'about_heading', 'about_text' ) as $key ) {
@@ -103,6 +109,9 @@ function kn_sanitize_settings( $input ): array {
 		}
 	}
 	$clean['contact_email'] = implode( ', ', array_unique( $receivers ) );
+	foreach ( array( 'knt_featured_sanitize', 'knt_security_sanitize' ) as $sanitizer ) {
+		if ( function_exists( $sanitizer ) ) { $clean = array_merge( $clean, $sanitizer( $input, $previous ) ); }
+	}
 	return $clean;
 }
 
@@ -116,66 +125,7 @@ function kn_register_settings(): void {
 }
 add_action( 'admin_init', 'kn_register_settings' );
 
-function kn_render_settings(): void {
-	if ( ! current_user_can( 'manage_options' ) ) {
-		return;
-	}
-	?>
-	<div class="wrap kn-admin">
-		<h1><?php esc_html_e( 'Notebook settings', 'kamal-notebook' ); ?></h1>
-		<p class="description"><?php esc_html_e( 'Choose the archive view and edit the short introductions. Write posts with the Guided Article, Quick Note, or Tutorial with lessons starter.', 'kamal-notebook' ); ?></p>
-		<form method="post" action="options.php">
-			<?php settings_fields( 'kn_settings' ); ?>
-			<h2><?php esc_html_e( 'Blog listing', 'kamal-notebook' ); ?></h2>
-			<div class="kn-layout-choices">
-				<label>
-					<input type="radio" name="kn_settings[archive_layout]" value="grid" <?php checked( kn_option( 'archive_layout' ), 'grid' ); ?>>
-					<span class="kn-layout-preview kn-preview-grid"><i></i><i></i><i></i></span>
-					<strong><?php esc_html_e( 'Illustrated grid', 'kamal-notebook' ); ?></strong>
-					<small><?php esc_html_e( 'The original prototype.', 'kamal-notebook' ); ?></small>
-				</label>
-				<label>
-					<input type="radio" name="kn_settings[archive_layout]" value="index" <?php checked( kn_option( 'archive_layout' ), 'index' ); ?>>
-					<span class="kn-layout-preview kn-preview-index"><i></i><i></i><i></i></span>
-					<strong><?php esc_html_e( 'Numbered index', 'kamal-notebook' ); ?></strong>
-					<small><?php esc_html_e( 'The second prototype listing, in the original palette.', 'kamal-notebook' ); ?></small>
-				</label>
-			</div>
-			<h2><?php esc_html_e( 'Home introduction', 'kamal-notebook' ); ?></h2>
-			<?php kn_setting_field( 'hero_prefix', __( 'Headline', 'kamal-notebook' ) ); ?>
-			<?php kn_setting_field( 'hero_accent', __( 'Accented word or phrase', 'kamal-notebook' ) ); ?>
-			<?php kn_setting_field( 'hero_deck', __( 'Introduction', 'kamal-notebook' ), true ); ?>
-			<h2><?php esc_html_e( 'About band', 'kamal-notebook' ); ?></h2>
-			<?php kn_setting_field( 'about_heading', __( 'Heading', 'kamal-notebook' ) ); ?>
-			<?php kn_setting_field( 'about_text', __( 'Short description', 'kamal-notebook' ), true ); ?>
-			<h2><?php esc_html_e( 'Reader tools', 'kamal-notebook' ); ?></h2>
-			<p><?php esc_html_e( 'Choose which actions appear below an article. Feedback requires the Notebook Tools plugin.', 'kamal-notebook' ); ?></p>
-			<?php kn_setting_checkbox( 'save_enabled', __( 'Save stories in the reader’s browser', 'kamal-notebook' ) ); ?>
-			<?php kn_setting_checkbox( 'share_enabled', __( 'Share via device menu or copy link', 'kamal-notebook' ) ); ?>
-			<?php kn_setting_checkbox( 'feedback_enabled', __( 'Private “Was this useful?” feedback', 'kamal-notebook' ) ); ?>
-			<h2><?php esc_html_e( 'Contact page', 'kamal-notebook' ); ?></h2>
-			<p><?php esc_html_e( 'Enter one or more receiver addresses, separated by commas. The form appears on the Contact page after an address is saved. Delivery uses this site’s WordPress mail configuration.', 'kamal-notebook' ); ?></p>
-			<?php kn_setting_field( 'contact_email', __( 'Send messages to', 'kamal-notebook' ) ); ?>
-			<?php submit_button( __( 'Save notebook settings', 'kamal-notebook' ) ); ?>
-		</form>
-		<div class="kn-admin-help">
-			<h2><?php esc_html_e( 'A simple way to write', 'kamal-notebook' ); ?></h2>
-			<ol>
-				<li><?php esc_html_e( 'Open Posts → Add New and choose Guided Article or Quick Note.', 'kamal-notebook' ); ?></li>
-				<li><?php esc_html_e( 'Replace the visible draft prompts, add sections from the pattern inserter, and set a short excerpt.', 'kamal-notebook' ); ?></li>
-				<li><?php esc_html_e( 'In the post editor, mark a post as the featured article and set its Featured image. Without an image, Notebook uses a bundled illustration.', 'kamal-notebook' ); ?></li>
-				<li><?php esc_html_e( 'Use Heading 2 for sections. The article table of contents builds itself; its preview is in the Post sidebar.', 'kamal-notebook' ); ?></li>
-				<li><?php esc_html_e( 'Use the Notebook Code block for highlighted code and a copy button.', 'kamal-notebook' ); ?></li>
-				<li><?php esc_html_e( 'For a long course, assign posts to a Series and give each lesson an order. Add Visual walkthrough patterns, images, and code within each lesson.', 'kamal-notebook' ); ?></li>
-			</ol>
-			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php' ) ); ?>"><?php esc_html_e( 'Write a new post', 'kamal-notebook' ); ?></a>
-			<?php if ( function_exists( 'knt_demo_page' ) ) : ?>
-				<a class="button" href="<?php echo esc_url( admin_url( 'themes.php?page=knt-demo-import' ) ); ?>"><?php esc_html_e( 'Import the demonstration site', 'kamal-notebook' ); ?></a>
-			<?php endif; ?>
-		</div>
-	</div>
-	<?php
-}
+require_once __DIR__ . '/includes/settings.php';
 
 function kn_setting_field( string $key, string $label, bool $long = false ): void {
 	printf( '<p><label for="kn-%1$s"><strong>%2$s</strong></label><br>', esc_attr( $key ), esc_html( $label ) );
@@ -194,6 +144,7 @@ function kn_setting_checkbox( string $key, string $label ): void {
 function kn_admin_assets( string $hook ): void {
 	if ( 'appearance_page_kn-settings' === $hook ) {
 		wp_enqueue_style( 'kn-admin', get_theme_file_uri( 'assets/css/admin.css' ), array(), KN_VERSION );
+		wp_enqueue_script( 'kn-admin-settings', get_theme_file_uri( 'assets/js/admin-settings.js' ), array(), KN_VERSION, true );
 	}
 }
 add_action( 'admin_enqueue_scripts', 'kn_admin_assets' );

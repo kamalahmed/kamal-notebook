@@ -12,7 +12,9 @@ $series_term = is_tax( 'knt_series' ) && function_exists( 'knt_series_lessons' )
 $search      = get_search_query();
 $paged       = max( 1, (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) );
 $filtered    = $series_term || '' !== $topic || '' !== $search;
-$lead        = $filtered || $paged > 1 || ! function_exists( 'knt_featured_post' ) ? null : knt_featured_post();
+// Keep one archive result set across pagination; filtered views include every matching post.
+$featured    = $filtered || ! function_exists( 'knt_featured_posts' ) ? array() : knt_featured_posts();
+$leads       = $paged > 1 ? array() : $featured;
 $archive_url = kn_archive_url();
 $categories  = get_categories( array( 'hide_empty' => true ) );
 // Match the main taxonomy query so valid course pages are never treated as 404s.
@@ -24,7 +26,7 @@ $story_query = array(
 	'paged'               => $paged,
 	'category_name'       => $topic,
 	's'                   => $search,
-	'post__not_in'        => $lead ? array( $lead->ID ) : array(),
+	'post__not_in'        => array_column( $featured, 'ID' ),
 	'ignore_sticky_posts' => true,
 );
 if ( $series_term ) {
@@ -35,6 +37,10 @@ if ( $series_term ) {
 }
 $stories = new WP_Query( $story_query );
 
+if ( $leads ) {
+	wp_enqueue_style( 'kn-featured', get_theme_file_uri( 'assets/css/featured.css' ), array( 'kn-site' ), KN_VERSION );
+	if ( count( $leads ) > 1 ) { wp_enqueue_script( 'kn-featured', get_theme_file_uri( 'assets/js/featured.js' ), array(), KN_VERSION, true ); }
+}
 get_header();
 ?>
 <?php if ( $series_term ) : ?>
@@ -66,18 +72,22 @@ get_header();
 		</div>
 	</div>
 
-	<?php if ( $lead ) : ?>
+	<?php if ( $leads ) : $slide_count = count( $leads ); ?>
+	<div class="kn-featured" <?php if ( $slide_count > 1 ) : ?>data-kn-featured role="region" aria-roledescription="carousel" aria-label="<?php esc_attr_e( 'Featured articles', 'kamal-notebook' ); ?>"<?php endif; ?>>
+	<div class="kn-featured-slides" id="kn-featured-slides">
+	<?php foreach ( $leads as $slide_index => $lead ) : ?>
+	<div class="kn-featured-slide<?php echo 0 === $slide_index ? ' is-active' : ''; ?>" <?php if ( $slide_count > 1 ) : ?>role="group" aria-roledescription="slide" aria-label="<?php echo esc_attr( sprintf( __( '%1$d of %2$d', 'kamal-notebook' ), $slide_index + 1, $slide_count ) ); ?>"<?php endif; ?> <?php echo 0 === $slide_index ? '' : 'aria-hidden="true" inert'; ?>>
 		<a class="lead-story" href="<?php echo esc_url( get_permalink( $lead ) ); ?>">
 			<div class="lead-art">
 				<?php if ( has_post_thumbnail( $lead ) ) : ?>
-					<?php echo get_the_post_thumbnail( $lead, 'kn-feature', array( 'loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async' ) ); ?>
+					<?php echo get_the_post_thumbnail( $lead, 'kn-feature', array( 'loading' => 0 === $slide_index ? 'eager' : 'lazy', 'fetchpriority' => 0 === $slide_index ? 'high' : 'low', 'decoding' => 'async' ) ); ?>
 				<?php else : ?>
 					<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/feature.svg' ) ); ?>" alt="" width="920" height="720" fetchpriority="high">
 				<?php endif; ?>
 				<span class="art-sticker"><?php esc_html_e( 'START HERE', 'kamal-notebook' ); ?> <span aria-hidden="true">↗</span></span>
 			</div>
 			<div class="lead-meta">
-				<span><?php esc_html_e( 'Featured essay', 'kamal-notebook' ); ?> <span aria-hidden="true">/</span> <?php echo esc_html( kn_post_topic( $lead->ID ) ); ?></span>
+				<span><?php esc_html_e( 'Featured article', 'kamal-notebook' ); ?> <span aria-hidden="true">/</span> <?php echo esc_html( kn_post_topic( $lead->ID ) ); ?></span>
 				<span><?php echo esc_html( kn_reading_minutes( $lead->ID ) ); ?> <?php esc_html_e( 'min read', 'kamal-notebook' ); ?></span>
 			</div>
 			<div class="lead-text">
@@ -86,6 +96,19 @@ get_header();
 				<span class="lead-arrow" aria-hidden="true">↗</span>
 			</div>
 		</a>
+	</div>
+	<?php endforeach; ?>
+	</div>
+	<?php if ( $slide_count > 1 ) : ?>
+	<div class="kn-featured-controls" hidden>
+		<span class="kn-featured-caption"><?php esc_html_e( 'IN THE SPOTLIGHT', 'kamal-notebook' ); ?></span>
+		<button type="button" data-featured-prev aria-controls="kn-featured-slides" aria-label="<?php esc_attr_e( 'Previous featured article', 'kamal-notebook' ); ?>"><span aria-hidden="true">←</span></button>
+		<span class="kn-featured-count" aria-hidden="true"><span data-featured-current>1</span> / <?php echo esc_html( $slide_count ); ?></span>
+		<button type="button" data-featured-next aria-controls="kn-featured-slides" aria-label="<?php esc_attr_e( 'Next featured article', 'kamal-notebook' ); ?>"><span aria-hidden="true">→</span></button>
+		<span class="sr-only" data-featured-status aria-live="polite" aria-atomic="true"></span>
+	</div>
+	<?php endif; ?>
+	</div>
 	<?php else : ?>
 		<div class="lead-story lead-placeholder">
 			<div class="lead-art"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/feature.svg' ) ); ?>" alt="" width="920" height="720" fetchpriority="high"></div>
