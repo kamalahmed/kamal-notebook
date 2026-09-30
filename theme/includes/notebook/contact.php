@@ -69,12 +69,12 @@ add_action( 'template_redirect', 'knt_contact_disable_page_cache', 0 );
 
 function knt_handle_contact_submission(): void {
 	if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
-		wp_die( esc_html__( 'This request is unavailable.', 'kamal-notebook-tools' ), '', array( 'response' => 405 ) );
+		wp_die( esc_html__( 'This request is unavailable.', 'kamal-notebook' ), '', array( 'response' => 405 ) );
 	}
 
 	$page_id = absint( knt_contact_post_field( 'contact_page_id' ) );
 	if ( ! knt_contact_page_is_valid( $page_id ) ) {
-		wp_die( esc_html__( 'This contact page is unavailable.', 'kamal-notebook-tools' ), '', array( 'response' => 404 ) );
+		wp_die( esc_html__( 'This contact page is unavailable.', 'kamal-notebook' ), '', array( 'response' => 404 ) );
 	}
 	knt_contact_redirect( $page_id, knt_contact_process( $page_id ) );
 }
@@ -137,7 +137,7 @@ function knt_contact_process( int $page_id ): string {
 	);
 	$sent = wp_mail(
 		knt_contact_recipients(),
-		__( 'A note from the notebook contact page', 'kamal-notebook-tools' ),
+		__( 'A note from the notebook contact page', 'kamal-notebook' ),
 		$body,
 		array( 'Content-Type: text/plain; charset=UTF-8', 'Reply-To: ' . $email )
 	);

@@ -36,7 +36,7 @@ $http_filter = static function ( $pre, $request, $url ) use ( &$http_count, &$mo
 add_filter( 'pre_wp_mail', $mail_filter );
 add_filter( 'pre_http_request', $http_filter, 10, 3 );
 try {
-	$settings = array_merge( is_array( $old ) ? $old : array(), knt_security_defaults(), array( 'contact_captcha' => 'turnstile', 'contact_captcha_source' => 'custom', 'contact_turnstile_sitekey' => 'test-public-key' ) );
+	$settings = array_merge( is_array( $old ) ? $old : array(), knt_security_defaults(), array( 'contact_captcha' => 'turnstile', 'contact_turnstile_sitekey' => 'test-public-key' ) );
 	update_option( 'kn_settings', $settings );
 	update_option( 'knt_contact_turnstile_secret', 'test-secret', false );
 	foreach ( array( 'success', 'reject', 'host', 'action', 'network', 'json', 'status' ) as $case ) {
@@ -96,11 +96,11 @@ try {
 	delete_option( 'knt_contact_turnstile_secret' );
 	knt_security_test_assert( 'security' === knt_contact_verify_captcha( $run . '-unconfigured' )->get_error_code(), 'Missing credentials fail closed.' );
 	update_option( 'knt_contact_turnstile_secret', 'test-secret', false );
-	// The shared CF7 script handle avoids loading Cloudflare twice.
+	// The shared script handle avoids loading Cloudflare twice.
 	wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
 	ob_start(); knt_contact_security_fields(); $widget = ob_get_clean();
 	$turnstile_scripts = array_filter( wp_scripts()->queue, static function ( $handle ) { return false !== strpos( (string) wp_scripts()->registered[$handle]->src, 'challenges.cloudflare.com/turnstile/v0/api.js' ); } );
-	knt_security_test_assert( 1 === count( $turnstile_scripts ), 'One Cloudflare loader when CF7 already enqueued it.' );
+	knt_security_test_assert( 1 === count( $turnstile_scripts ), 'One Cloudflare loader when already enqueued.' );
 	knt_security_test_assert( false !== strpos( $widget, 'data-action="notebook_contact"' ), 'Widget action matches server.' );
 
 	$settings['contact_captcha'] = 'recaptcha';

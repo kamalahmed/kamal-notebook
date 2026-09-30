@@ -7,7 +7,7 @@
   "icon": "editor-code",
   "description": "A highlighted code example with a filename and copy button.",
   "keywords": ["code", "syntax", "programming"],
-  "textdomain": "kamal-notebook-tools",
+  "textdomain": "kamal-notebook",
   "attributes": {
     "language": { "type": "string", "default": "javascript" },
     "filename": { "type": "string", "default": "example.js" },

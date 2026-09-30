@@ -171,7 +171,145 @@
     ctx.beginPath(); ctx.moveTo(-22, 527); ctx.lineTo(348, 527); ctx.stroke(); ctx.restore();
   }
 
-  const motifs = { orbit: drawOrbit, pages: drawPages, path: drawPath, botanical: drawBotanical, weave: drawWeave, horizon: drawHorizon, windows: drawWindows };
+  // New plates stay inside the illustration field. Existing recipes retain
+  // their original drawing functions and random sequence.
+  function illustration(drawPlate) {
+    return (c, rand) => {
+      ctx.save();
+      ctx.beginPath(); ctx.rect(714, 110, 486, 627); ctx.clip();
+      drawPlate({ ...c, line: c === colors.sage ? c.ink : c.soft }, rand);
+      ctx.restore();
+    };
+  }
+
+  function polygon(points, color) {
+    ctx.fillStyle = color; ctx.beginPath();
+    points.forEach(([x, y], index) => index ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
+    ctx.closePath(); ctx.fill();
+  }
+
+  function drawConstellation(c, rand) {
+    const points = [[789, 307], [913, 213], [1102, 292], [1004, 419], [1111, 592], [906, 642], [809, 515]]
+      .map(([x, y]) => [x + (rand() - 0.5) * 38, y + (rand() - 0.5) * 38]);
+    ctx.strokeStyle = c.line; ctx.lineWidth = 2;
+    [[0, 1], [1, 2], [2, 3], [3, 0], [3, 4], [4, 5], [5, 6], [6, 3]].forEach(([a, b]) => {
+      ctx.beginPath(); ctx.moveTo(...points[a]); ctx.lineTo(...points[b]); ctx.stroke();
+    });
+    points.forEach(([x, y], index) => {
+      const radius = [18, 31, 13, 49, 24, 13, 28][index];
+      ctx.fillStyle = index === 3 ? c.accent : index % 2 ? c.light : c.paper;
+      ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = c.line; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(x, y, radius + 9, 0, Math.PI * 2); ctx.stroke();
+    });
+    ctx.strokeStyle = c.light; ctx.lineWidth = 1.5;
+    [[796, 194], [1143, 463], [828, 666]].forEach(([x, y]) => {
+      ctx.beginPath(); ctx.moveTo(x - 8, y); ctx.lineTo(x + 8, y);
+      ctx.moveTo(x, y - 8); ctx.lineTo(x, y + 8); ctx.stroke();
+    });
+  }
+
+  function drawFolded(c, rand) {
+    const offset = (rand() - 0.5) * 32;
+    ctx.translate(0, offset);
+    polygon([[775, 255], [1068, 178], [1158, 568], [868, 654]], c.ink);
+    polygon([[754, 239], [1049, 161], [1138, 550], [847, 635]], c.paper);
+    polygon([[754, 239], [974, 365], [1049, 161]], c.light);
+    polygon([[974, 365], [1138, 550], [1049, 161]], c.accent);
+    polygon([[847, 635], [974, 365], [1138, 550]], c.soft);
+    ctx.strokeStyle = c.field; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(754, 239); ctx.lineTo(974, 365); ctx.lineTo(1138, 550);
+    ctx.moveTo(847, 635); ctx.lineTo(974, 365); ctx.lineTo(1049, 161); ctx.stroke();
+    ctx.strokeStyle = c.ink; ctx.lineWidth = 2;
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath(); ctx.moveTo(817 + i * 6, 388 + i * 28);
+      ctx.lineTo(902 + i * 6, 414 + i * 14); ctx.stroke();
+    }
+    ctx.fillStyle = c.accent; ctx.beginPath(); ctx.arc(1052, 654, 24, 0, Math.PI * 2); ctx.fill();
+  }
+
+  function drawTerraces(c, rand) {
+    const shift = (rand() - 0.5) * 42;
+    [c.soft, c.light, c.paper, c.accent, c.field, c.light].forEach((shade, index) => {
+      ctx.save(); ctx.translate(967 + shift, 440); ctx.rotate(-0.19);
+      const scale = 1 - index * 0.135;
+      ctx.scale(scale, scale);
+      ctx.beginPath(); ctx.moveTo(-209, -144);
+      ctx.bezierCurveTo(-223, -291, 99, -308, 146, -178);
+      ctx.bezierCurveTo(190, -72, 258, -24, 193, 92);
+      ctx.bezierCurveTo(139, 160, 162, 277, 29, 270);
+      ctx.bezierCurveTo(-128, 269, -270, 181, -205, 72);
+      ctx.bezierCurveTo(-154, -11, -193, -69, -209, -144);
+      ctx.closePath(); ctx.fillStyle = shade; ctx.fill();
+      ctx.strokeStyle = c.field; ctx.lineWidth = 1.5 / scale; ctx.stroke(); ctx.restore();
+    });
+    ctx.strokeStyle = c.ink; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(953 + shift, 428); ctx.lineTo(981 + shift, 428);
+    ctx.moveTo(967 + shift, 414); ctx.lineTo(967 + shift, 442); ctx.stroke();
+  }
+
+  function drawMosaic(c, rand) {
+    const shades = [c.paper, c.light, c.accent, c.soft];
+    ctx.translate(764, 213);
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 3; col++) {
+        ctx.save(); ctx.translate(col * 128 + 60, row * 128 + 60);
+        ctx.rotate(Math.floor(rand() * 4) * Math.PI / 2);
+        const index = Math.floor(rand() * shades.length);
+        ctx.fillStyle = shades[index]; ctx.fillRect(-59, -59, 118, 118);
+        ctx.fillStyle = shades[(index + 1) % shades.length];
+        ctx.beginPath(); ctx.moveTo(-59, -59); ctx.arc(-59, -59, 118, 0, Math.PI / 2); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = c.field;
+        ctx.beginPath(); ctx.arc(-59, -59, 53, 0, Math.PI / 2); ctx.lineTo(-59, -59); ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+    }
+  }
+
+  function drawSignal(c, rand) {
+    const phase = rand() * Math.PI * 2;
+    ctx.lineWidth = 3;
+    for (let row = 0; row < 19; row++) {
+      ctx.strokeStyle = row > 7 && row < 12 ? c.accent : row % 3 === 0 ? c.light : c.line;
+      ctx.beginPath();
+      for (let x = 752; x <= 1166; x += 3) {
+        const envelope = Math.pow(Math.sin((x - 752) / 414 * Math.PI), 2);
+        const y = 224 + row * 23 + Math.sin((x - 752) / 53 + phase + row * 0.18) * 67 * envelope;
+        if (x === 752) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    ctx.strokeStyle = c.paper; ctx.lineWidth = 1;
+    for (let x = 770; x < 1160; x += 24) {
+      ctx.beginPath(); ctx.moveTo(x, 702); ctx.lineTo(x, x % 48 === 2 ? 690 : 696); ctx.stroke();
+    }
+  }
+
+  function drawSundial(c, rand) {
+    const angle = -0.75 + rand() * 0.65;
+    ctx.translate(958, 435);
+    ctx.fillStyle = c.paper; ctx.beginPath(); ctx.arc(0, 0, 193, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = c.field; ctx.lineWidth = 2;
+    for (let i = 0; i < 48; i++) {
+      const a = i * Math.PI / 24;
+      const inner = i % 4 ? 171 : 153;
+      ctx.beginPath(); ctx.moveTo(Math.cos(a) * inner, Math.sin(a) * inner);
+      ctx.lineTo(Math.cos(a) * 181, Math.sin(a) * 181); ctx.stroke();
+    }
+    ctx.rotate(angle);
+    polygon([[0, -123], [119, 105], [0, 44]], c.soft);
+    polygon([[0, -123], [-58, 81], [0, 44]], c.accent);
+    polygon([[0, -123], [58, 81], [0, 44]], c.light);
+    ctx.fillStyle = c.field; ctx.beginPath(); ctx.arc(0, 44, 7, 0, Math.PI * 2); ctx.fill();
+  }
+
+  const motifs = {
+    orbit: drawOrbit, pages: drawPages, path: drawPath, botanical: drawBotanical,
+    weave: drawWeave, horizon: drawHorizon, windows: drawWindows,
+    constellation: illustration(drawConstellation), folded: illustration(drawFolded),
+    terraces: illustration(drawTerraces), mosaic: illustration(drawMosaic),
+    signal: illustration(drawSignal), sundial: illustration(drawSundial),
+  };
 
   function fitLines(text, width) {
     const words = text.split(/\s+/).filter(Boolean);

@@ -2,9 +2,10 @@
   "name": "kamal-notebook",
   "private": true,
   "scripts": {
-    "build:code": "esbuild plugin/assets/code-view.src.js --bundle --minify --format=iife --outfile=plugin/assets/code-view.js",
-    "format": "prettier --write theme/assets/css/*.css theme/assets/js/*.js plugin/assets/*.js plugin/assets/*.css",
-    "check": "node --check theme/assets/js/site.js && node --check theme/assets/js/archive.js && node --check plugin/assets/recaptcha.js && node --check theme/assets/js/reader.js && node --check plugin/assets/code-editor.js && node --check plugin/assets/feedback.js"
+    "build:code": "esbuild theme/assets/notebook/code-view.src.js --bundle --minify --format=iife --outfile=theme/assets/notebook/code-view.js",
+    "format": "prettier --write theme/assets/css/*.css theme/assets/js/*.js theme/assets/notebook/*.js theme/assets/notebook/*.css",
+    "check": "node --check theme/assets/js/site.js && node --check theme/assets/js/archive.js && node --check theme/assets/notebook/recaptcha.js && node --check theme/assets/js/reader.js && node --check theme/assets/notebook/code-editor.js && node --check theme/assets/notebook/feedback.js",
+    "package:theme": "python3 scripts/package.py"
   },
   "devDependencies": {
     "codemirror": "^5.65.20",

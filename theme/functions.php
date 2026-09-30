@@ -3,7 +3,22 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const KN_VERSION = '1.5.0';
+const KN_VERSION = '2.0.0';
+
+// Preserve existing content/meta identifiers while moving all runtime code into the theme.
+// An older extension may already have loaded on the first upgrade request.
+if ( ! function_exists( 'knt_register_code_block' ) ) {
+	require_once __DIR__ . '/includes/notebook.php';
+}
+function kn_retire_legacy_tools(): void {
+	$legacy = 'kamal-notebook-tools/kamal-notebook-tools.php';
+	if ( in_array( $legacy, (array) get_option( 'active_plugins', array() ), true ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		deactivate_plugins( $legacy );
+	}
+}
+add_action( 'after_setup_theme', 'kn_retire_legacy_tools' );
+require_once __DIR__ . '/includes/upgrades.php';
 
 function kn_setup(): void {
 	add_theme_support( 'title-tag' );
@@ -41,7 +56,7 @@ function kn_editor_outline_assets(): void {
 	wp_enqueue_script( 'kn-editor-outline', get_theme_file_uri( 'assets/js/editor-outline.js' ), array( 'wp-plugins', 'wp-editor', 'wp-element', 'wp-data', 'wp-block-editor', 'wp-i18n' ), KN_VERSION, true );
 	wp_add_inline_script( 'kn-editor-outline', 'window.knFeatureAvailable = ' . ( function_exists( 'knt_featured_post' ) ? 'true' : 'false' ) . ';', 'before' );
 	if ( function_exists( 'knt_cover_studio_page' ) ) {
-		wp_add_inline_script( 'kn-editor-outline', 'window.knCoverStudioBase = ' . wp_json_encode( admin_url( 'edit.php?page=knt-cover-studio&post=' ) ) . ';', 'before' );
+		wp_add_inline_script( 'kn-editor-outline', 'window.knCoverStudioBase = ' . wp_json_encode( admin_url( 'admin.php?page=knt-cover-studio&post=' ) ) . ';', 'before' );
 	}
 	wp_enqueue_style( 'kn-editor-outline', get_theme_file_uri( 'assets/css/editor-outline.css' ), array(), KN_VERSION );
 }
@@ -116,9 +131,11 @@ function kn_sanitize_settings( $input ): array {
 }
 
 function kn_settings_menu(): void {
-	add_theme_page( __( 'Notebook settings', 'kamal-notebook' ), __( 'Notebook settings', 'kamal-notebook' ), 'manage_options', 'kn-settings', 'kn_render_settings' );
+	add_menu_page( __( 'Notebook settings', 'kamal-notebook' ), __( 'Notebook', 'kamal-notebook' ), 'manage_options', 'kn-settings', 'kn_render_settings', 'dashicons-book-alt', 1 );
+	add_submenu_page( 'kn-settings', __( 'Notebook settings', 'kamal-notebook' ), __( 'Settings', 'kamal-notebook' ), 'manage_options', 'kn-settings', 'kn_render_settings' );
 }
-add_action( 'admin_menu', 'kn_settings_menu' );
+add_action( 'admin_menu', 'kn_settings_menu', 9 );
+require_once __DIR__ . '/includes/admin-navigation.php';
 
 function kn_register_settings(): void {
 	register_setting( 'kn_settings', 'kn_settings', array( 'type' => 'object', 'sanitize_callback' => 'kn_sanitize_settings', 'default' => kn_defaults() ) );
@@ -142,7 +159,7 @@ function kn_setting_checkbox( string $key, string $label ): void {
 }
 
 function kn_admin_assets( string $hook ): void {
-	if ( 'appearance_page_kn-settings' === $hook ) {
+	if ( in_array( $hook, array( 'toplevel_page_kn-settings', 'appearance_page_kn-settings' ), true ) ) {
 		wp_enqueue_style( 'kn-admin', get_theme_file_uri( 'assets/css/admin.css' ), array(), KN_VERSION );
 		wp_enqueue_script( 'kn-admin-settings', get_theme_file_uri( 'assets/js/admin-settings.js' ), array(), KN_VERSION, true );
 	}

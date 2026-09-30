@@ -82,13 +82,13 @@
             "div",
             { style: { padding: "18px" } },
             h(SelectControl, {
-              label: __("Language", "kamal-notebook-tools"),
+              label: __("Language", "kamal-notebook"),
               value: attributes.language,
               options,
               onChange: (language) => setAttributes({ language }),
             }),
             h(TextControl, {
-              label: __("Filename or label", "kamal-notebook-tools"),
+              label: __("Filename or label", "kamal-notebook"),
               value: attributes.filename,
               onChange: (filename) => setAttributes({ filename }),
             }),
@@ -98,12 +98,12 @@
           "div",
           { className: "knt-editor-toolbar" },
           h(TextControl, {
-            label: __("Filename", "kamal-notebook-tools"),
+            label: __("Filename", "kamal-notebook"),
             value: attributes.filename,
             onChange: (filename) => setAttributes({ filename }),
           }),
           h(SelectControl, {
-            label: __("Language", "kamal-notebook-tools"),
+            label: __("Language", "kamal-notebook"),
             value: attributes.language,
             options,
             onChange: (language) => setAttributes({ language }),
@@ -112,7 +112,7 @@
         h(
           "label",
           { className: "knt-editor-label" },
-          __("Code", "kamal-notebook-tools"),
+          __("Code", "kamal-notebook"),
         ),
         h("textarea", {
           ref: textarea,
@@ -120,7 +120,7 @@
           onChange: (event) => setAttributes({ code: event.target.value }),
           spellCheck: false,
           rows: 12,
-          "aria-label": __("Code", "kamal-notebook-tools"),
+          "aria-label": __("Code", "kamal-notebook"),
         }),
         !wp.codeEditor?.initialize &&
           h(
@@ -128,7 +128,7 @@
             { status: "info", isDismissible: false },
             __(
               "Syntax highlighting is disabled in your WordPress profile; the code remains editable.",
-              "kamal-notebook-tools",
+              "kamal-notebook",
             ),
           ),
       );

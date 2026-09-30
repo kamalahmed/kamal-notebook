@@ -4,8 +4,8 @@ defined( 'ABSPATH' ) || exit;
 
 function knt_contact_lab_assets(): void {
 	if ( is_singular() && has_shortcode( get_post()->post_content, 'notebook_contact_lab' ) ) {
-		wp_enqueue_style( 'knt-contact-lab', plugins_url( 'assets/contact-lab.css', dirname( __FILE__ ) ), array(), KNT_VERSION );
-		wp_enqueue_script( 'knt-contact-lab', plugins_url( 'assets/contact-lab.js', dirname( __FILE__ ) ), array(), KNT_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
+		wp_enqueue_style( 'knt-contact-lab', knt_asset_url( 'contact-lab.css' ), array(), KNT_VERSION );
+		wp_enqueue_script( 'knt-contact-lab', knt_asset_url( 'contact-lab.js' ), array(), KNT_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'knt_contact_lab_assets' );

@@ -2,16 +2,15 @@ KAMAL NOTEBOOK — CONTACT CAPTCHA SETUP
 
 This file is a setup guide, not a Cloudflare configuration file. No special
 cloudflare.txt file needs to be uploaded to your website or DNS provider.
-Activate Notebook Tools, then open Appearance > Notebook settings > Contact & security.
+Install and activate the Kamal Notebook theme. Open Notebook > Settings > Contact & security.
+All form handling and bot protection are built into the theme.
 
 CLOUDFLARE TURNSTILE
 1. Open https://dash.cloudflare.com/ and select Turnstile. Create a widget.
 2. Add your exact public hostname (and www hostname if visitors use it).
    Choose Managed mode. Turnstile does not require Cloudflare DNS/proxying.
 3. In Notebook settings select Cloudflare Turnstile for Contact CAPTCHA.
-4. Choose custom Turnstile credentials and paste the widget's site key and
-   secret key. Alternatively choose the existing Contact Form 7 integration
-   if you already configured Turnstile under Contact > Integration.
+4. Paste the widget's site key and secret key into the Turnstile fields.
 5. Save. Open /contact/ as a signed-out visitor and complete verification.
    Submit one deliberate test note and check its arrival in the configured inbox.
 6. Empty, expired, reused, wrong-hostname and failed verification tokens must
@@ -26,8 +25,8 @@ GOOGLE reCAPTCHA — OPTIONAL ALTERNATIVE
 1. Register a reCAPTCHA v2 "I'm not a robot" checkbox key pair for your hostname:
    https://www.google.com/recaptcha/admin/create
 2. Select Google reCAPTCHA v2 (checkbox) in Contact CAPTCHA.
-3. Enter the separate Google reCAPTCHA v2 site key and secret key. The Turnstile
-   credentials selector applies only to Turnstile. CF7's v3 keys cannot be reused.
+3. Enter the separate Google reCAPTCHA v2 site key and secret key.
+   v3 keys cannot be reused for this checkbox integration.
    This integration uses Google's Siteverify API; v3/invisible/Enterprise-only
    integrations are not supported. Use keys compatible with the v2 checkbox
    and Siteverify flow documented below.
@@ -52,11 +51,12 @@ Do not weaken production hostname validation to accommodate test keys.
 Secrets are stored separately on the server, never printed in the settings
 form. Leave a secret field blank to keep its stored value. Configure complete
 credentials before enabling either provider. Only the selected provider's
-widget is rendered by Notebook; other plugins may enqueue their own scripts.
+widget is rendered by Notebook.
 Check your privacy notice and any consent requirements for the chosen provider.
 
 WITHOUT A THIRD-PARTY CAPTCHA
-Choose Off to keep Notebook's built-in honeypot, duplicate suppression, and
-per-IP, per-email and site-wide rate limits without loading a CAPTCHA provider.
+Choose Built-in protection (no external service), the default for new installs.
+Notebook's honeypot, duplicate suppression, and
+per-IP, per-email and site-wide rate limits run without loading a CAPTCHA provider.
 These measures reduce abuse but do not constitute a human-verification test.
 No homemade puzzle CAPTCHA is included.

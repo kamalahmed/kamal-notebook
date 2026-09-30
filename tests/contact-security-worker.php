@@ -8,7 +8,7 @@ $wpdb->prefix .= 'security_test_' . $run . '_';
 $settings = array_merge( knt_security_defaults(), array( 'contact_email' => 'intercepted@example.invalid', 'contact_captcha' => 'off' ) );
 if ( 'global' === $scenario ) { $settings['contact_global_limit'] = 4; }
 if ( 'attempt' === $scenario ) {
-	$settings['contact_captcha'] = 'turnstile'; $settings['contact_captcha_source'] = 'custom'; $settings['contact_turnstile_sitekey'] = 'test-sitekey'; $settings['contact_attempt_limit'] = 4;
+	$settings['contact_captcha'] = 'turnstile'; $settings['contact_turnstile_sitekey'] = 'test-sitekey'; $settings['contact_attempt_limit'] = 4;
 }
 add_filter( 'pre_option_kn_settings', static function () use ( $settings ) { return $settings; } );
 add_filter( 'pre_option_knt_contact_turnstile_secret', static function () { return 'test-secret'; } );

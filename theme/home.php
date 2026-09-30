@@ -87,7 +87,9 @@ get_header();
 	<div class="kn-featured-slide<?php echo 0 === $slide_index ? ' is-active' : ''; ?>" <?php if ( $slide_count > 1 ) : ?>role="group" aria-roledescription="slide" aria-label="<?php echo esc_attr( sprintf( __( '%1$d of %2$d', 'kamal-notebook' ), $slide_index + 1, $slide_count ) ); ?>"<?php endif; ?> <?php echo 0 === $slide_index ? '' : 'aria-hidden="true" inert'; ?>>
 		<a class="lead-story" href="<?php echo esc_url( get_permalink( $lead ) ); ?>">
 			<div class="lead-art">
-				<?php if ( has_post_thumbnail( $lead ) ) : ?>
+				<?php if ( get_post_meta( $lead->ID, '_kn_demo_art', true ) && ! has_post_thumbnail( $lead ) ) : ?>
+					<?php echo kn_post_image( $lead->ID, 'kn-feature', 0 === $slide_index ); ?>
+				<?php elseif ( has_post_thumbnail( $lead ) ) : ?>
 					<?php echo get_the_post_thumbnail( $lead, 'kn-feature', array( 'loading' => 0 === $slide_index ? 'eager' : 'lazy', 'fetchpriority' => 0 === $slide_index ? 'high' : 'low', 'decoding' => 'async' ) ); ?>
 				<?php else : ?>
 					<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/feature.svg' ) ); ?>" alt="" width="920" height="720" fetchpriority="high">

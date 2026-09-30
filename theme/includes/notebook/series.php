@@ -9,10 +9,10 @@ const KNT_SERIES_ORDER_META = '_knt_series_order';
 function knt_register_series(): void {
 	register_taxonomy( KNT_SERIES_TAXONOMY, 'post', array(
 		'labels' => array(
-			'name'          => __( 'Series', 'kamal-notebook-tools' ),
-			'singular_name' => __( 'Series', 'kamal-notebook-tools' ),
-			'add_new_item'  => __( 'Add new series', 'kamal-notebook-tools' ),
-			'edit_item'     => __( 'Edit series', 'kamal-notebook-tools' ),
+			'name'          => __( 'Series', 'kamal-notebook' ),
+			'singular_name' => __( 'Series', 'kamal-notebook' ),
+			'add_new_item'  => __( 'Add new series', 'kamal-notebook' ),
+			'edit_item'     => __( 'Edit series', 'kamal-notebook' ),
 		),
 		'public'            => true,
 		'show_ui'           => true,
@@ -33,7 +33,7 @@ function knt_register_series(): void {
 add_action( 'init', 'knt_register_series' );
 
 function knt_series_metabox(): void {
-	add_meta_box( 'knt-series', __( 'Course / series lesson', 'kamal-notebook-tools' ), 'knt_series_metabox_content', 'post', 'side', 'default' );
+	add_meta_box( 'knt-series', __( 'Course / series lesson', 'kamal-notebook' ), 'knt_series_metabox_content', 'post', 'side', 'default' );
 }
 add_action( 'add_meta_boxes', 'knt_series_metabox' );
 
@@ -43,17 +43,17 @@ function knt_series_metabox_content( WP_Post $post ): void {
 	$current = knt_series_term( $post->ID );
 	$order = (int) get_post_meta( $post->ID, KNT_SERIES_ORDER_META, true );
 	?>
-	<p><label for="knt-series-term"><strong><?php esc_html_e( 'Series', 'kamal-notebook-tools' ); ?></strong></label></p>
+	<p><label for="knt-series-term"><strong><?php esc_html_e( 'Series', 'kamal-notebook' ); ?></strong></label></p>
 	<select id="knt-series-term" name="knt_series_term" class="widefat">
-		<option value="0"><?php esc_html_e( 'Standalone post', 'kamal-notebook-tools' ); ?></option>
+		<option value="0"><?php esc_html_e( 'Standalone post', 'kamal-notebook' ); ?></option>
 		<?php if ( ! is_wp_error( $terms ) ) : foreach ( $terms as $term ) : ?>
 			<option value="<?php echo esc_attr( $term->term_id ); ?>" <?php selected( $current ? $current->term_id : 0, $term->term_id ); ?>><?php echo esc_html( $term->name ); ?></option>
 		<?php endforeach; endif; ?>
 	</select>
-	<p class="description"><?php esc_html_e( 'Create and name series under Posts → Series. Each lesson is a separate post with its own URL.', 'kamal-notebook-tools' ); ?></p>
-	<p><label for="knt-series-order"><strong><?php esc_html_e( 'Lesson number', 'kamal-notebook-tools' ); ?></strong></label></p>
+	<p class="description"><?php esc_html_e( 'Create and name series under Posts → Series. Each lesson is a separate post with its own URL.', 'kamal-notebook' ); ?></p>
+	<p><label for="knt-series-order"><strong><?php esc_html_e( 'Lesson number', 'kamal-notebook' ); ?></strong></label></p>
 	<input id="knt-series-order" name="knt_series_order" type="number" class="small-text" min="1" max="9999" step="1" value="<?php echo esc_attr( $order > 0 ? $order : 1 ); ?>">
-	<p class="description"><?php esc_html_e( 'Lessons appear in number order. Equal numbers are ordered by publish date.', 'kamal-notebook-tools' ); ?></p>
+	<p class="description"><?php esc_html_e( 'Lessons appear in number order. Equal numbers are ordered by publish date.', 'kamal-notebook' ); ?></p>
 	<?php
 }
 
@@ -135,10 +135,10 @@ function knt_render_series_navigation( int $post_id ): void {
 		return;
 	}
 	?>
-	<nav class="knt-series-nav" data-knt-series-nav aria-label="<?php esc_attr_e( 'Course lessons', 'kamal-notebook-tools' ); ?>">
-		<div class="knt-series-head"><span><?php esc_html_e( 'A COURSE IN THE NOTEBOOK', 'kamal-notebook-tools' ); ?></span><strong><?php echo esc_html( $series['name'] ); ?></strong><small><?php echo esc_html( sprintf( __( 'Lesson %1$d of %2$d', 'kamal-notebook-tools' ), $series['position'], $series['total'] ) ); ?></small></div>
+	<nav class="knt-series-nav" data-knt-series-nav aria-label="<?php esc_attr_e( 'Course lessons', 'kamal-notebook' ); ?>">
+		<div class="knt-series-head"><span><?php esc_html_e( 'A COURSE IN THE NOTEBOOK', 'kamal-notebook' ); ?></span><strong><?php echo esc_html( $series['name'] ); ?></strong><small><?php echo esc_html( sprintf( __( 'Lesson %1$d of %2$d', 'kamal-notebook' ), $series['position'], $series['total'] ) ); ?></small></div>
 		<div class="knt-series-links">
-			<?php foreach ( array( 'previous' => __( 'Previous lesson', 'kamal-notebook-tools' ), 'next' => __( 'Next lesson', 'kamal-notebook-tools' ) ) as $direction => $label ) : ?>
+			<?php foreach ( array( 'previous' => __( 'Previous lesson', 'kamal-notebook' ), 'next' => __( 'Next lesson', 'kamal-notebook' ) ) as $direction => $label ) : ?>
 				<?php if ( $series[ $direction ] ) : ?>
 					<a data-knt-lesson-link data-knt-lesson-id="<?php echo esc_attr( $series[ $direction ]['id'] ); ?>" href="<?php echo esc_url( $series[ $direction ]['url'] ); ?>"><span><?php echo esc_html( $label ); ?></span><strong><?php echo esc_html( $series[ $direction ]['title'] ); ?></strong><span aria-hidden="true"><?php echo 'previous' === $direction ? '←' : '→'; ?></span></a>
 				<?php endif; ?>
@@ -156,7 +156,7 @@ function knt_series_assets(): void {
 	}
 	// Later lessons can contain a Notebook Code block even when the first one does not.
 	wp_enqueue_script( 'knt-code-view' );
-	wp_enqueue_script( 'knt-series', plugins_url( 'assets/series.js', dirname( __DIR__ ) . '/kamal-notebook-tools.php' ), array(), KNT_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
+	wp_enqueue_script( 'knt-series', knt_asset_url( 'series.js' ), array(), KNT_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
 	wp_add_inline_script( 'knt-series', 'window.kntSeries = ' . wp_json_encode( array( 'endpoint' => esc_url_raw( rest_url( 'kamal-notebook/v1/series-lesson/' ) ), 'siteTitle' => get_bloginfo( 'name' ) ) ) . ';', 'before' );
 }
 add_action( 'wp_enqueue_scripts', 'knt_series_assets' );
@@ -176,7 +176,7 @@ function knt_series_lesson_response( WP_REST_Request $request ) {
 	$lesson = get_post( $post_id );
 	$series = knt_series_context( $post_id );
 	if ( ! $lesson || 'post' !== $lesson->post_type || ! $series ) {
-		return new WP_Error( 'knt_lesson_missing', __( 'This lesson is unavailable.', 'kamal-notebook-tools' ), array( 'status' => 404 ) );
+		return new WP_Error( 'knt_lesson_missing', __( 'This lesson is unavailable.', 'kamal-notebook' ), array( 'status' => 404 ) );
 	}
 	$raw = $lesson->post_content;
 	$legacy = str_contains( $raw, 'lessons-container' ) && str_contains( $raw, '<style>' ) && str_contains( $raw, '<script>' );
@@ -204,7 +204,7 @@ function knt_series_lesson_response( WP_REST_Request $request ) {
 			$thumbnail = (string) $image_tag->get_attribute( 'src' );
 		}
 	}
-	$topic = function_exists( 'kn_post_topic' ) ? kn_post_topic( $post_id ) : __( 'Journal', 'kamal-notebook-tools' );
+	$topic = function_exists( 'kn_post_topic' ) ? kn_post_topic( $post_id ) : __( 'Journal', 'kamal-notebook' );
 	$response = rest_ensure_response( array(
 		'id' => $post_id,
 		'url' => get_permalink( $post_id ),
@@ -215,7 +215,7 @@ function knt_series_lesson_response( WP_REST_Request $request ) {
 		'hero' => array(
 			'image' => $thumbnail,
 			'topic' => $topic,
-			'kind' => __( 'LESSON', 'kamal-notebook-tools' ),
+			'kind' => __( 'LESSON', 'kamal-notebook' ),
 			'readingMinutes' => function_exists( 'kn_reading_minutes' ) ? kn_reading_minutes( $post_id ) : 1,
 			'author' => get_the_author_meta( 'display_name', (int) $lesson->post_author ),
 			'date' => get_the_date( '', $lesson ),

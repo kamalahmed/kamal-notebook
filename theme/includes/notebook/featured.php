@@ -111,24 +111,24 @@ function knt_featured_settings_fields(): void {
  $posts = get_posts( array( 'post_type' => 'post', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'title', 'order' => 'ASC', 'has_password' => false ) );
  ?>
  <div data-kn-setting="featured homepage slider display single">
-  <label for="kn-featured-mode"><strong><?php esc_html_e( 'Homepage display', 'kamal-notebook-tools' ); ?></strong></label>
+  <label for="kn-featured-mode"><strong><?php esc_html_e( 'Homepage display', 'kamal-notebook' ); ?></strong></label>
   <select id="kn-featured-mode" name="kn_settings[featured_mode]">
-   <option value="single" <?php selected( $settings['featured_mode'] ?? 'single', 'single' ); ?>><?php esc_html_e( 'Single featured article', 'kamal-notebook-tools' ); ?></option>
-   <option value="slider" <?php selected( $settings['featured_mode'] ?? 'single', 'slider' ); ?>><?php esc_html_e( 'Featured article slider', 'kamal-notebook-tools' ); ?></option>
+   <option value="single" <?php selected( $settings['featured_mode'] ?? 'single', 'single' ); ?>><?php esc_html_e( 'Single featured article', 'kamal-notebook' ); ?></option>
+   <option value="slider" <?php selected( $settings['featured_mode'] ?? 'single', 'slider' ); ?>><?php esc_html_e( 'Featured article slider', 'kamal-notebook' ); ?></option>
   </select>
-  <p class="description"><?php esc_html_e( 'Single shows the first selected article. The slider shows up to four, with reader-controlled previous and next buttons.', 'kamal-notebook-tools' ); ?></p>
+  <p class="description"><?php esc_html_e( 'Single shows the first selected article. The slider shows up to four, with reader-controlled previous and next buttons.', 'kamal-notebook' ); ?></p>
  </div>
  <?php for ( $index = 0; $index < 4; $index++ ) : ?>
  <div data-kn-setting="featured homepage article order selection">
-  <label for="kn-featured-<?php echo esc_attr( $index ); ?>"><strong><?php printf( esc_html__( 'Featured article %d', 'kamal-notebook-tools' ), $index + 1 ); ?></strong></label>
+  <label for="kn-featured-<?php echo esc_attr( $index ); ?>"><strong><?php printf( esc_html__( 'Featured article %d', 'kamal-notebook' ), $index + 1 ); ?></strong></label>
   <select id="kn-featured-<?php echo esc_attr( $index ); ?>" name="kn_settings[featured_ids][]">
-   <option value=""><?php esc_html_e( 'None', 'kamal-notebook-tools' ); ?></option>
+   <option value=""><?php esc_html_e( 'None', 'kamal-notebook' ); ?></option>
    <?php foreach ( $posts as $post ) : if ( ! current_user_can( 'edit_post', $post->ID ) ) { continue; } ?>
-    <option value="<?php echo esc_attr( $post->ID ); ?>" <?php selected( $selected[ $index ] ?? 0, $post->ID ); ?>><?php echo esc_html( $post->post_title ?: __( '(Untitled)', 'kamal-notebook-tools' ) ); ?></option>
+    <option value="<?php echo esc_attr( $post->ID ); ?>" <?php selected( $selected[ $index ] ?? 0, $post->ID ); ?>><?php echo esc_html( $post->post_title ?: __( '(Untitled)', 'kamal-notebook' ) ); ?></option>
    <?php endforeach; ?>
   </select>
  </div>
  <?php endfor; ?>
- <p class="description"><?php esc_html_e( 'Articles appear in this order. Only published, public posts are available. Checking Featured in a post editor moves that article into the first position.', 'kamal-notebook-tools' ); ?></p>
+ <p class="description"><?php esc_html_e( 'Articles appear in this order. Only published, public posts are available. Checking Featured in a post editor moves that article into the first position.', 'kamal-notebook' ); ?></p>
  <?php
 }

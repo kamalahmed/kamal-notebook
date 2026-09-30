@@ -4,8 +4,8 @@ defined( 'ABSPATH' ) || exit;
 
 function knt_reading_lab_assets(): void {
 	if ( is_singular() && has_shortcode( get_post()->post_content, 'notebook_reading_lab' ) ) {
-		wp_enqueue_style( 'knt-reading-lab', plugins_url( 'assets/reading-lab.css', dirname( __FILE__ ) ), array(), KNT_VERSION );
-		wp_enqueue_script( 'knt-reading-lab', plugins_url( 'assets/reading-lab.js', dirname( __FILE__ ) ), array(), KNT_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
+		wp_enqueue_style( 'knt-reading-lab', knt_asset_url( 'reading-lab.css' ), array(), KNT_VERSION );
+		wp_enqueue_script( 'knt-reading-lab', knt_asset_url( 'reading-lab.js' ), array(), KNT_VERSION, array( 'strategy' => 'defer', 'in_footer' => true ) );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'knt_reading_lab_assets' );
